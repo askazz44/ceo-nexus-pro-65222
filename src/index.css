@@ -8,8 +8,8 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    /* Professional B2B color palette */
-    --background: 0 0% 100%;
+    /* Modern gradient backgrounds */
+    --background: 220 20% 98%;
     --foreground: 222 47% 11%;
 
     --card: 0 0% 100%;
@@ -18,63 +18,74 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222 47% 11%;
 
-    /* Primary: Professional Blue */
-    --primary: 217 91% 60%;
+    /* Primary: Vibrant Blue-Purple */
+    --primary: 250 90% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 217 91% 54%;
+    --primary-hover: 250 90% 55%;
+    --primary-glow: 250 90% 72%;
 
-    /* Secondary: Light Grey */
-    --secondary: 220 13% 95%;
+    /* Secondary: Soft Purple */
+    --secondary: 260 60% 96%;
     --secondary-foreground: 222 47% 11%;
 
     /* Muted backgrounds */
-    --muted: 220 13% 96%;
+    --muted: 220 17% 95%;
     --muted-foreground: 215 16% 47%;
 
-    /* Accent */
-    --accent: 220 13% 91%;
-    --accent-foreground: 222 47% 11%;
+    /* Accent: Vibrant Purple */
+    --accent: 260 80% 94%;
+    --accent-foreground: 250 90% 42%;
 
-    /* Financial colors */
-    --income: 142 76% 36%;
+    /* Financial colors - More vibrant */
+    --income: 142 76% 40%;
     --income-foreground: 0 0% 100%;
-    --income-light: 142 76% 96%;
+    --income-light: 142 76% 95%;
+    --income-glow: 142 76% 50%;
     
     --expense: 0 84% 60%;
     --expense-foreground: 0 0% 100%;
-    --expense-light: 0 84% 97%;
+    --expense-light: 0 84% 95%;
+    --expense-glow: 0 84% 70%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
+    --border: 220 13% 88%;
     --input: 220 13% 91%;
-    --ring: 217 91% 60%;
+    --ring: 250 90% 62%;
 
     --radius: 0.75rem;
 
-    /* Charts */
-    --chart-1: 217 91% 60%;
-    --chart-2: 142 76% 36%;
+    /* Charts - More vibrant palette */
+    --chart-1: 250 90% 62%;
+    --chart-2: 142 76% 40%;
     --chart-3: 0 84% 60%;
     --chart-4: 45 93% 47%;
     --chart-5: 280 80% 60%;
 
     /* Sidebar */
-    --sidebar-background: 0 0% 98%;
+    --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222 47% 11%;
-    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary: 250 90% 62%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 13% 95%;
+    --sidebar-accent: 260 60% 96%;
     --sidebar-accent-foreground: 222 47% 11%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-ring: 250 90% 62%;
 
-    /* Shadows */
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(250 90% 62%), hsl(280 80% 60%));
+    --gradient-success: linear-gradient(135deg, hsl(142 76% 40%), hsl(160 76% 45%));
+    --gradient-danger: linear-gradient(135deg, hsl(0 84% 60%), hsl(15 84% 60%));
+    --gradient-subtle: linear-gradient(180deg, hsl(0 0% 100%), hsl(220 20% 98%));
+
+    /* Shadows - More prominent */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow: 0 2px 8px 0 rgb(0 0 0 / 0.08);
+    --shadow-md: 0 4px 12px -2px rgb(0 0 0 / 0.12);
+    --shadow-lg: 0 10px 25px -5px rgb(0 0 0 / 0.15);
+    --shadow-xl: 0 20px 40px -10px rgb(0 0 0 / 0.2);
+    --shadow-glow: 0 0 30px 0 hsl(250 90% 62% / 0.3);
   }
 
   .dark {
@@ -139,5 +150,37 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-feature-settings: "cv11", "ss01";
+    font-variation-settings: "opsz" auto;
+  }
+}
+
+@layer utilities {
+  .gradient-primary {
+    background: var(--gradient-primary);
+  }
+  
+  .gradient-success {
+    background: var(--gradient-success);
+  }
+  
+  .gradient-danger {
+    background: var(--gradient-danger);
+  }
+  
+  .gradient-subtle {
+    background: var(--gradient-subtle);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .card-hover {
+    @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
+  }
+
+  .btn-glow {
+    @apply transition-all duration-300 hover:shadow-glow;
   }
 }

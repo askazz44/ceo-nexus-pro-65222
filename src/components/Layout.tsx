@@ -63,37 +63,48 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
+      <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 shadow-sm">
+        <div className="container flex h-16 items-center">
           <div className="mr-4 flex">
-            <Link to="/" className="mr-6 flex items-center space-x-2">
-              <span className="font-bold text-lg">CEO Tracker</span>
+            <Link to="/" className="mr-6 flex items-center space-x-2 group">
+              <div className="h-9 w-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-md group-hover:shadow-glow transition-all">
+                <span className="text-lg font-bold text-primary-foreground">CT</span>
+              </div>
+              <span className="font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                CEO Tracker
+              </span>
             </Link>
           </div>
-          <nav className="flex items-center space-x-6 text-sm font-medium flex-1">
+          <nav className="flex items-center space-x-2 text-sm font-medium flex-1">
             {navItems.map((item) => (
               <Link
                 key={item.path}
                 to={item.path}
-                className={`transition-colors hover:text-primary ${
+                className={`relative px-4 py-2 rounded-lg transition-all duration-300 ${
                   location.pathname === item.path
-                    ? "text-primary"
-                    : "text-muted-foreground"
+                    ? "bg-primary/10 text-primary font-semibold shadow-sm"
+                    : "text-muted-foreground hover:text-primary hover:bg-accent"
                 }`}
               >
                 <span className="flex items-center gap-2">
                   <item.icon className="h-4 w-4" />
                   {item.label}
                 </span>
+                {location.pathname === item.path && (
+                  <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-1/2 h-0.5 bg-gradient-primary rounded-full" />
+                )}
               </Link>
             ))}
           </nav>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-muted-foreground hidden sm:block">
-              {user?.email}
-            </span>
-            <Button variant="ghost" size="icon" onClick={handleSignOut}>
+          <div className="flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-accent/50">
+              <User className="h-4 w-4 text-primary" />
+              <span className="text-sm font-medium text-foreground">
+                {user?.email}
+              </span>
+            </div>
+            <Button variant="ghost" size="icon" onClick={handleSignOut} className="hover:bg-destructive/10 hover:text-destructive">
               <LogOut className="h-4 w-4" />
             </Button>
           </div>

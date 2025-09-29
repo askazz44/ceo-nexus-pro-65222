@@ -117,15 +117,18 @@ export default function Projects() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold">I Miei Progetti</h1>
-          <p className="text-muted-foreground">Gestisci le tue aziende e progetti</p>
+        <div className="relative">
+          <div className="absolute -top-10 left-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+            I Miei Progetti
+          </h1>
+          <p className="text-muted-foreground mt-2">Gestisci le tue aziende e progetti</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
-            <Button disabled={!canCreate}>
+            <Button disabled={!canCreate} className="btn-glow shadow-md">
               <Plus className="mr-2 h-4 w-4" />
               Nuovo Progetto
             </Button>
@@ -233,38 +236,44 @@ export default function Projects() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {projects.map((project, index) => (
             <Card
               key={project.id}
-              className="hover:shadow-lg transition-shadow cursor-pointer"
+              className="group card-hover cursor-pointer overflow-hidden border-2 hover:border-primary/50 bg-gradient-to-br from-card to-accent/5"
               onClick={() => navigate(`/project/${project.id}`)}
+              style={{ animationDelay: `${index * 100}ms` }}
             >
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Building2 className="h-5 w-5" />
+              <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-primary opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity" />
+              <CardHeader className="relative">
+                <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-3 shadow-md group-hover:shadow-glow transition-all">
+                  <Building2 className="h-6 w-6 text-primary-foreground" />
+                </div>
+                <CardTitle className="text-xl group-hover:text-primary transition-colors">
                   {project.name}
                 </CardTitle>
                 {project.industry && (
-                  <CardDescription>{project.industry}</CardDescription>
+                  <CardDescription className="text-sm">{project.industry}</CardDescription>
                 )}
               </CardHeader>
-              <CardContent>
+              <CardContent className="relative">
                 {project.description && (
-                  <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                  <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
                     {project.description}
                   </p>
                 )}
                 {project.target_revenue && (
-                  <div className="flex items-center gap-2 text-sm">
-                    <TrendingUp className="h-4 w-4 text-chart-1" />
-                    <span className="font-semibold">Target:</span>
-                    <span>
-                      {new Intl.NumberFormat('it-IT', {
-                        style: 'currency',
-                        currency: project.currency,
-                      }).format(project.target_revenue)}
-                    </span>
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-income-light/50 border border-income/20">
+                    <TrendingUp className="h-4 w-4 text-income" />
+                    <div className="flex-1">
+                      <p className="text-xs text-muted-foreground">Target Revenue</p>
+                      <p className="font-bold text-income">
+                        {new Intl.NumberFormat('it-IT', {
+                          style: 'currency',
+                          currency: project.currency,
+                        }).format(project.target_revenue)}
+                      </p>
+                    </div>
                   </div>
                 )}
               </CardContent>
