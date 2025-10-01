@@ -5,11 +5,14 @@ import { Check, Crown, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const PRICE_IDS = {
-  pro: "price_1SCvZtQq3sG1dhTUWm9HbmkG",
-  business: "price_1SCvaMQq3sG1dhTUZWRPq6qc",
-  lifetime: "price_1SCvaoQq3sG1dhTUxv1BoADT",
+  pro_monthly: "price_1SDMO8Qq3sG1dhTUwHusboCN",
+  pro_yearly: "price_1SDMOfQq3sG1dhTUzZ4VevXN",
+  business_monthly: "price_1SDPTdQq3sG1dhTUcfeVjrui",
+  business_yearly: "price_1SDPTtQq3sG1dhTUpw16XOy7",
+  lifetime: "price_1SDPUIQq3sG1dhTUZlnFF8fH",
 };
 
 const Subscription = () => {
@@ -18,6 +21,7 @@ const Subscription = () => {
   const [currentTier, setCurrentTier] = useState<string>("free");
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">("monthly");
 
   const checkSubscription = async () => {
     try {
@@ -117,7 +121,8 @@ const Subscription = () => {
   const plans = [
     {
       name: "Free",
-      price: "€0",
+      monthlyPrice: "€0",
+      yearlyPrice: "€0",
       period: "/sempre",
       description: "Per iniziare",
       features: [
@@ -132,44 +137,47 @@ const Subscription = () => {
     },
     {
       name: "Pro",
-      price: "€15",
-      period: "/mese",
+      monthlyPrice: "€9.99",
+      yearlyPrice: "€79",
+      period: billingPeriod === "monthly" ? "/mese" : "/anno",
       description: "Per professionisti",
       features: [
-        "5 progetti",
+        "10 progetti",
+        "ZERO ADS",
         "Cronologia illimitata",
         "Export avanzati",
-        "Previsioni AI",
-        "Integrazioni base"
+        "Previsioni AI"
       ],
-      priceId: PRICE_IDS.pro,
+      priceId: billingPeriod === "monthly" ? PRICE_IDS.pro_monthly : PRICE_IDS.pro_yearly,
       tier: "pro",
       icon: Zap,
       popular: true,
     },
     {
       name: "Business",
-      price: "€25",
-      period: "/mese",
+      monthlyPrice: "€19.99",
+      yearlyPrice: "€149",
+      period: billingPeriod === "monthly" ? "/mese" : "/anno",
       description: "Per aziende",
       features: [
         "Progetti illimitati",
-        "Multi-utente (5 membri)",
-        "Accesso API",
-        "Tutte le integrazioni",
+        "Team access",
+        "API",
+        "White-label",
         "Supporto prioritario"
       ],
-      priceId: PRICE_IDS.business,
+      priceId: billingPeriod === "monthly" ? PRICE_IDS.business_monthly : PRICE_IDS.business_yearly,
       tier: "business",
       icon: Crown,
     },
     {
       name: "Lifetime",
-      price: "€299",
+      monthlyPrice: "€249",
+      yearlyPrice: "€249",
       period: "/una tantum",
-      description: "Pagamento unico",
+      description: "Pro tier forever",
       features: [
-        "Tutte le funzionalità Business",
+        "Tutte le funzionalità Pro",
         "Accesso a vita",
         "Nessun costo mensile",
         "Aggiornamenti inclusi",
@@ -199,6 +207,15 @@ const Subscription = () => {
         <p className="text-xl text-muted-foreground">
           Gestisci i tuoi progetti con gli strumenti più adatti alle tue esigenze
         </p>
+        
+        <div className="flex justify-center mt-8">
+          <Tabs value={billingPeriod} onValueChange={(value) => setBillingPeriod(value as "monthly" | "yearly")}>
+            <TabsList>
+              <TabsTrigger value="monthly">Mensile</TabsTrigger>
+              <TabsTrigger value="yearly">Annuale</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
         {currentTier !== "free" && (
           <div className="mt-6 flex flex-col items-center gap-2">
             <Badge variant="secondary" className="text-lg px-4 py-2">
@@ -251,7 +268,9 @@ const Subscription = () => {
                 <CardTitle className="text-2xl">{plan.name}</CardTitle>
                 <CardDescription>{plan.description}</CardDescription>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold">{plan.price}</span>
+                  <span className="text-4xl font-bold">
+                    {billingPeriod === "monthly" ? plan.monthlyPrice : plan.yearlyPrice}
+                  </span>
                   <span className="text-muted-foreground">{plan.period}</span>
                 </div>
               </CardHeader>
