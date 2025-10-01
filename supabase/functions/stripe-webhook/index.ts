@@ -11,6 +11,8 @@ serve(async (req) => {
   try {
     const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY") || "";
     const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET") || "";
+    const webhookSecret2 = Deno.env.get("STRIPE_WEBHOOK_SECRET_2") || "";
+    
     if (!stripeSecret || !webhookSecret) {
       logStep("Missing Stripe secrets");
       return new Response(JSON.stringify({ error: "Missing Stripe secrets" }), { status: 500 });
@@ -22,12 +24,31 @@ serve(async (req) => {
     const body = await req.text();
 
     let event: Stripe.Event;
+    let webhookUsed = "";
+    
+    // Try first webhook secret (memorable-voyage-snapshot)
     try {
       event = stripe.webhooks.constructEvent(body, signature!, webhookSecret);
-      logStep("Event constructed", { type: event.type, id: event.id });
+      webhookUsed = "STRIPE_WEBHOOK_SECRET";
+      logStep("Event constructed with first webhook", { type: event.type, id: event.id });
     } catch (err) {
-      logStep("Invalid signature", { error: (err as Error).message });
-      return new Response(JSON.stringify({ error: "Invalid signature" }), { status: 400 });
+      // If first webhook fails and we have a second one, try it
+      if (webhookSecret2) {
+        try {
+          event = stripe.webhooks.constructEvent(body, signature!, webhookSecret2);
+          webhookUsed = "STRIPE_WEBHOOK_SECRET_2";
+          logStep("Event constructed with second webhook", { type: event.type, id: event.id });
+        } catch (err2) {
+          logStep("Invalid signature on both webhooks", { 
+            error1: (err as Error).message,
+            error2: (err2 as Error).message 
+          });
+          return new Response(JSON.stringify({ error: "Invalid signature" }), { status: 400 });
+        }
+      } else {
+        logStep("Invalid signature", { error: (err as Error).message });
+        return new Response(JSON.stringify({ error: "Invalid signature" }), { status: 400 });
+      }
     }
 
     const supabase = createClient(
