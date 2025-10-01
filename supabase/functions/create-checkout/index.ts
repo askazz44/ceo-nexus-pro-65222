@@ -56,6 +56,18 @@ serve(async (req) => {
     const mode = price.type === "recurring" ? "subscription" : "payment";
     logStep("Determined checkout mode", { mode, priceType: price.type });
 
+    // Determine tier from price ID
+    const PRICE_TO_TIER: Record<string, string> = {
+      "price_1SDMO8Qq3sG1dhTUwHusboCN": "pro",
+      "price_1SDMOfQq3sG1dhTUzZ4VevXN": "pro",
+      "price_1SDPTdQq3sG1dhTUcfeVjrui": "business",
+      "price_1SDPTtQq3sG1dhTUpw16XOy7": "business",
+      "price_1SDPUIQq3sG1dhTUZlnFF8fH": "lifetime",
+    };
+    const tier = PRICE_TO_TIER[priceId] || "unknown";
+    logStep("Determined tier", { tier });
+
+    const origin = req.headers.get("origin") || "";
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -66,8 +78,14 @@ serve(async (req) => {
         },
       ],
       mode: mode,
-      success_url: `${req.headers.get("origin")}/`,
-      cancel_url: `${req.headers.get("origin")}/`,
+      success_url: `${origin}/subscription/success?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${origin}/subscription/canceled`,
+      metadata: {
+        user_id: user.id,
+        user_email: user.email,
+        tier: tier,
+      },
+      allow_promotion_codes: true,
     });
 
     logStep("Checkout session created", { sessionId: session.id });
