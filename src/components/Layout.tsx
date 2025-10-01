@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Outlet, useNavigate, Link, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, FolderKanban, Settings, LogOut, User } from "lucide-react";
+import { LayoutDashboard, FolderKanban, Settings, LogOut, User, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Layout() {
@@ -56,6 +56,7 @@ export default function Layout() {
   const navItems = [
     { path: "/", icon: LayoutDashboard, label: "Dashboard" },
     { path: "/projects", icon: FolderKanban, label: "Progetti" },
+    { path: "/subscription", icon: CreditCard, label: "Abbonamento" },
   ];
 
   if (isAdmin) {
