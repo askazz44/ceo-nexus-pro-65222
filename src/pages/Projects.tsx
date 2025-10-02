@@ -18,6 +18,7 @@ export default function Projects() {
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [canCreate, setCanCreate] = useState(true);
+  const [projectLimit, setProjectLimit] = useState({ current: 0, max: 0, tier: 'free' as 'free' | 'pro' | 'business' | 'lifetime' });
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -59,13 +60,29 @@ export default function Projects() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const { data, error } = await supabase.rpc("can_create_project", {
-      user_id: user.id,
-    });
+    // Prendi il profilo con il tier
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_tier')
+      .eq('id', user.id)
+      .single();
 
-    if (!error) {
-      setCanCreate(data);
-    }
+    // Conta progetti attuali
+    const { count } = await supabase
+      .from('projects')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id);
+
+    // Calcola limite
+    const limits = { free: 2, pro: 10, business: 999999, lifetime: 999999 };
+    const maxProjects = limits[profile?.subscription_tier || 'free'];
+
+    setProjectLimit({ 
+      current: count || 0, 
+      max: maxProjects,
+      tier: profile?.subscription_tier || 'free'
+    });
+    setCanCreate((count || 0) < maxProjects);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -248,10 +265,19 @@ export default function Projects() {
 
       {!canCreate && (
         <Card className="border-warning bg-warning/5">
-          <CardContent className="pt-6">
-            <p className="text-sm text-warning-foreground">
-              Hai raggiunto il limite di progetti per il tuo piano. Aggiorna l'abbonamento per crearne altri.
+          <CardContent className="pt-6 space-y-3">
+            <p className="text-sm font-medium">
+              Limite raggiunto: {projectLimit.current}/{projectLimit.max} progetti
             </p>
+            <p className="text-sm text-muted-foreground">
+              {projectLimit.tier === 'free' && 
+                'Passa a Pro per gestire fino a 10 progetti'}
+              {projectLimit.tier === 'pro' && 
+                'Passa a Business per progetti illimitati'}
+            </p>
+            <Button onClick={() => navigate('/subscription')} size="sm">
+              Vedi Piani
+            </Button>
           </CardContent>
         </Card>
       )}
