@@ -10,9 +10,10 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Loader2, TrendingUp, TrendingDown, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Loader2, TrendingUp, TrendingDown, Pencil, Trash2, MoreVertical } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -26,6 +27,7 @@ export default function ProjectDetail() {
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
+  const [deleteProjectDialogOpen, setDeleteProjectDialogOpen] = useState(false);
 
   const [formData, setFormData] = useState({
     type: "income" as "income" | "expense",
@@ -187,6 +189,28 @@ export default function ProjectDetail() {
     setDeleteDialogOpen(true);
   };
 
+  const handleDeleteProject = async () => {
+    const { error } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "Errore",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Progetto eliminato",
+        description: "Il progetto è stato rimosso con successo",
+      });
+      navigate("/projects");
+    }
+    setDeleteProjectDialogOpen(false);
+  };
+
   const totalIncome = transactions
     .filter(t => t.type === "income")
     .reduce((sum, t) => sum + parseFloat(t.amount), 0);
@@ -219,6 +243,19 @@ export default function ProjectDetail() {
             <p className="text-muted-foreground">{project.industry}</p>
           )}
         </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreVertical className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => setDeleteProjectDialogOpen(true)} className="text-destructive">
+              <Trash2 className="mr-2 h-4 w-4" />
+              Elimina Progetto
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <Dialog open={open} onOpenChange={(open) => {
           setOpen(open);
           if (!open) {
@@ -461,7 +498,7 @@ export default function ProjectDetail() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Conferma Eliminazione</AlertDialogTitle>
+            <AlertDialogTitle>Conferma Eliminazione Transazione</AlertDialogTitle>
             <AlertDialogDescription>
               Sei sicuro di voler eliminare questa transazione? Questa azione non può essere annullata.
             </AlertDialogDescription>
@@ -469,6 +506,21 @@ export default function ProjectDetail() {
           <AlertDialogFooter>
             <AlertDialogCancel>Annulla</AlertDialogCancel>
             <AlertDialogAction onClick={handleDelete}>Elimina</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={deleteProjectDialogOpen} onOpenChange={setDeleteProjectDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Conferma Eliminazione Progetto</AlertDialogTitle>
+            <AlertDialogDescription>
+              Sei sicuro di voler eliminare questo progetto? Tutte le transazioni associate verranno eliminate. Questa azione non può essere annullata.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProject}>Elimina Progetto</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
