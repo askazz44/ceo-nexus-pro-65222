@@ -10,8 +10,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Loader2, TrendingUp, TrendingDown, Download } from "lucide-react";
+import { ArrowLeft, Plus, Loader2, TrendingUp, TrendingDown, Pencil, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -22,6 +23,9 @@ export default function ProjectDetail() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState<any>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
 
   const [formData, setFormData] = useState({
     type: "income" as "income" | "expense",
@@ -72,14 +76,94 @@ export default function ProjectDetail() {
     e.preventDefault();
     setSubmitting(true);
 
-    const { error } = await supabase.from("transactions").insert({
-      project_id: id,
-      type: formData.type,
-      amount: parseFloat(formData.amount),
-      category: formData.category || null,
-      note: formData.note || null,
-      transaction_date: formData.transaction_date,
+    if (editingTransaction) {
+      const { error } = await supabase
+        .from("transactions")
+        .update({
+          type: formData.type,
+          amount: parseFloat(formData.amount),
+          category: formData.category || null,
+          note: formData.note || null,
+          transaction_date: formData.transaction_date,
+        })
+        .eq("id", editingTransaction.id);
+
+      if (error) {
+        toast({
+          title: "Errore",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Transazione aggiornata",
+          description: "La transazione è stata modificata",
+        });
+        setOpen(false);
+        setEditingTransaction(null);
+        setFormData({
+          type: "income",
+          amount: "",
+          category: "",
+          note: "",
+          transaction_date: new Date().toISOString().split('T')[0],
+        });
+        loadTransactions();
+      }
+    } else {
+      const { error } = await supabase.from("transactions").insert({
+        project_id: id,
+        type: formData.type,
+        amount: parseFloat(formData.amount),
+        category: formData.category || null,
+        note: formData.note || null,
+        transaction_date: formData.transaction_date,
+      });
+
+      if (error) {
+        toast({
+          title: "Errore",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Transazione aggiunta",
+          description: "La transazione è stata registrata",
+        });
+        setOpen(false);
+        setFormData({
+          type: "income",
+          amount: "",
+          category: "",
+          note: "",
+          transaction_date: new Date().toISOString().split('T')[0],
+        });
+        loadTransactions();
+      }
+    }
+    setSubmitting(false);
+  };
+
+  const handleEdit = (transaction: any) => {
+    setEditingTransaction(transaction);
+    setFormData({
+      type: transaction.type,
+      amount: transaction.amount.toString(),
+      category: transaction.category || "",
+      note: transaction.note || "",
+      transaction_date: transaction.transaction_date,
     });
+    setOpen(true);
+  };
+
+  const handleDelete = async () => {
+    if (!transactionToDelete) return;
+
+    const { error } = await supabase
+      .from("transactions")
+      .delete()
+      .eq("id", transactionToDelete);
 
     if (error) {
       toast({
@@ -89,20 +173,18 @@ export default function ProjectDetail() {
       });
     } else {
       toast({
-        title: "Transazione aggiunta",
-        description: "La transazione è stata registrata",
-      });
-      setOpen(false);
-      setFormData({
-        type: "income",
-        amount: "",
-        category: "",
-        note: "",
-        transaction_date: new Date().toISOString().split('T')[0],
+        title: "Transazione eliminata",
+        description: "La transazione è stata rimossa",
       });
       loadTransactions();
     }
-    setSubmitting(false);
+    setDeleteDialogOpen(false);
+    setTransactionToDelete(null);
+  };
+
+  const openDeleteDialog = (transactionId: string) => {
+    setTransactionToDelete(transactionId);
+    setDeleteDialogOpen(true);
   };
 
   const totalIncome = transactions
@@ -137,7 +219,19 @@ export default function ProjectDetail() {
             <p className="text-muted-foreground">{project.industry}</p>
           )}
         </div>
-        <Dialog open={open} onOpenChange={setOpen}>
+        <Dialog open={open} onOpenChange={(open) => {
+          setOpen(open);
+          if (!open) {
+            setEditingTransaction(null);
+            setFormData({
+              type: "income",
+              amount: "",
+              category: "",
+              note: "",
+              transaction_date: new Date().toISOString().split('T')[0],
+            });
+          }
+        }}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
@@ -146,9 +240,9 @@ export default function ProjectDetail() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Aggiungi Transazione</DialogTitle>
+              <DialogTitle>{editingTransaction ? "Modifica Transazione" : "Aggiungi Transazione"}</DialogTitle>
               <DialogDescription>
-                Registra un'entrata o un'uscita per questo progetto
+                {editingTransaction ? "Modifica i dati della transazione" : "Registra un'entrata o un'uscita per questo progetto"}
               </DialogDescription>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -203,7 +297,7 @@ export default function ProjectDetail() {
               </div>
               <Button type="submit" className="w-full" disabled={submitting}>
                 {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Aggiungi
+                {editingTransaction ? "Salva Modifiche" : "Aggiungi"}
               </Button>
             </form>
           </DialogContent>
@@ -303,8 +397,24 @@ export default function ProjectDetail() {
                           )}
                         </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
-                        {new Date(transaction.transaction_date).toLocaleDateString('it-IT')}
+                      <div className="flex items-center gap-2">
+                        <div className="text-sm text-muted-foreground mr-2">
+                          {new Date(transaction.transaction_date).toLocaleDateString('it-IT')}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleEdit(transaction)}
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => openDeleteDialog(transaction.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}
@@ -347,6 +457,21 @@ export default function ProjectDetail() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Conferma Eliminazione</AlertDialogTitle>
+            <AlertDialogDescription>
+              Sei sicuro di voler eliminare questa transazione? Questa azione non può essere annullata.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Elimina</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
