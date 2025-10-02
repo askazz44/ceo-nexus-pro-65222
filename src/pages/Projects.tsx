@@ -8,8 +8,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Plus, Loader2, TrendingUp, Building2 } from "lucide-react";
+import { Plus, Loader2, TrendingUp, Building2, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 
 export default function Projects() {
   const { toast } = useToast();
@@ -19,6 +20,8 @@ export default function Projects() {
   const [canCreate, setCanCreate] = useState(true);
   const [open, setOpen] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -106,6 +109,38 @@ export default function Projects() {
       checkCanCreate();
     }
     setSubmitting(false);
+  };
+
+  const handleDelete = async () => {
+    if (!projectToDelete) return;
+
+    const { error } = await supabase
+      .from("projects")
+      .delete()
+      .eq("id", projectToDelete);
+
+    if (error) {
+      toast({
+        title: "Errore",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Progetto eliminato",
+        description: "Il progetto è stato rimosso con successo",
+      });
+      loadProjects();
+      checkCanCreate();
+    }
+    setDeleteDialogOpen(false);
+    setProjectToDelete(null);
+  };
+
+  const openDeleteDialog = (e: React.MouseEvent, projectId: string) => {
+    e.stopPropagation();
+    setProjectToDelete(projectId);
+    setDeleteDialogOpen(true);
   };
 
   if (loading) {
@@ -246,8 +281,18 @@ export default function Projects() {
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-primary opacity-10 rounded-full blur-2xl group-hover:opacity-20 transition-opacity" />
               <CardHeader className="relative">
-                <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-3 shadow-md group-hover:shadow-glow transition-all">
-                  <Building2 className="h-6 w-6 text-primary-foreground" />
+                <div className="flex items-start justify-between">
+                  <div className="h-12 w-12 rounded-xl bg-gradient-primary flex items-center justify-center mb-3 shadow-md group-hover:shadow-glow transition-all">
+                    <Building2 className="h-6 w-6 text-primary-foreground" />
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={(e) => openDeleteDialog(e, project.id)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
                 </div>
                 <CardTitle className="text-xl group-hover:text-primary transition-colors">
                   {project.name}
@@ -281,6 +326,21 @@ export default function Projects() {
           ))}
         </div>
       )}
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Conferma Eliminazione</AlertDialogTitle>
+            <AlertDialogDescription>
+              Sei sicuro di voler eliminare questo progetto? Tutte le transazioni associate verranno eliminate. Questa azione non può essere annullata.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Annulla</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>Elimina</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
