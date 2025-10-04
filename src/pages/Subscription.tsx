@@ -6,14 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
-const PRICE_IDS = {
-  pro_monthly: "price_1SDMO8Qq3sG1dhTUwHusboCN",
-  pro_yearly: "price_1SDMOfQq3sG1dhTUzZ4VevXN",
-  business_monthly: "price_1SDPTdQq3sG1dhTUcfeVjrui",
-  business_yearly: "price_1SDPTtQq3sG1dhTUpw16XOy7",
-  lifetime: "price_1SDPUIQq3sG1dhTUZlnFF8fH",
-};
+import { STRIPE_CONFIG } from "@/config/stripe";
 
 const Subscription = () => {
   const { toast } = useToast();
@@ -121,69 +114,46 @@ const Subscription = () => {
   const plans = [
     {
       name: "Free",
-      monthlyPrice: "€0",
-      yearlyPrice: "€0",
+      monthlyPrice: STRIPE_CONFIG.pricing.free.monthly,
+      yearlyPrice: STRIPE_CONFIG.pricing.free.yearly,
       period: "/sempre",
-      description: "Per iniziare",
-      features: [
-        "2 progetti",
-        "30 giorni di cronologia",
-        "Analisi base",
-        "Export CSV"
-      ],
+      description: STRIPE_CONFIG.descriptions.free,
+      features: STRIPE_CONFIG.features.free,
       priceId: null,
       tier: "free",
       icon: Zap,
     },
     {
       name: "Pro",
-      monthlyPrice: "€9.99",
-      yearlyPrice: "€79",
+      monthlyPrice: STRIPE_CONFIG.pricing.pro.monthly,
+      yearlyPrice: STRIPE_CONFIG.pricing.pro.yearly,
       period: billingPeriod === "monthly" ? "/mese" : "/anno",
-      description: "Per professionisti",
-      features: [
-        "10 progetti",
-        "ZERO ADS",
-        "Cronologia illimitata",
-        "Export avanzati",
-        "Previsioni AI"
-      ],
-      priceId: billingPeriod === "monthly" ? PRICE_IDS.pro_monthly : PRICE_IDS.pro_yearly,
+      description: STRIPE_CONFIG.descriptions.pro,
+      features: STRIPE_CONFIG.features.pro,
+      priceId: billingPeriod === "monthly" ? STRIPE_CONFIG.priceIds.pro_monthly : STRIPE_CONFIG.priceIds.pro_yearly,
       tier: "pro",
       icon: Zap,
       popular: true,
     },
     {
       name: "Business",
-      monthlyPrice: "€19.99",
-      yearlyPrice: "€149",
+      monthlyPrice: STRIPE_CONFIG.pricing.business.monthly,
+      yearlyPrice: STRIPE_CONFIG.pricing.business.yearly,
       period: billingPeriod === "monthly" ? "/mese" : "/anno",
-      description: "Per aziende",
-      features: [
-        "Progetti illimitati",
-        "Team access",
-        "API",
-        "White-label",
-        "Supporto prioritario"
-      ],
-      priceId: billingPeriod === "monthly" ? PRICE_IDS.business_monthly : PRICE_IDS.business_yearly,
+      description: STRIPE_CONFIG.descriptions.business,
+      features: STRIPE_CONFIG.features.business,
+      priceId: billingPeriod === "monthly" ? STRIPE_CONFIG.priceIds.business_monthly : STRIPE_CONFIG.priceIds.business_yearly,
       tier: "business",
       icon: Crown,
     },
     {
       name: "Lifetime",
-      monthlyPrice: "€249",
-      yearlyPrice: "€249",
+      monthlyPrice: STRIPE_CONFIG.pricing.lifetime.monthly,
+      yearlyPrice: STRIPE_CONFIG.pricing.lifetime.yearly,
       period: "/una tantum",
-      description: "Pro tier forever",
-      features: [
-        "Tutte le funzionalità Pro",
-        "Accesso a vita",
-        "Nessun costo mensile",
-        "Aggiornamenti inclusi",
-        "Supporto premium"
-      ],
-      priceId: PRICE_IDS.lifetime,
+      description: STRIPE_CONFIG.descriptions.lifetime,
+      features: STRIPE_CONFIG.features.lifetime,
+      priceId: STRIPE_CONFIG.priceIds.lifetime,
       tier: "lifetime",
       icon: Crown,
       highlight: true,
