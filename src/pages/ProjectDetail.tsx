@@ -14,6 +14,10 @@ import { ArrowLeft, Plus, Loader2, TrendingUp, TrendingDown, Pencil, Trash2, Mor
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { transactionSchema, type TransactionFormData } from "@/lib/schemas/transactionSchema";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -23,18 +27,20 @@ export default function ProjectDetail() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [editingTransaction, setEditingTransaction] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
   const [deleteProjectDialogOpen, setDeleteProjectDialogOpen] = useState(false);
 
-  const [formData, setFormData] = useState({
-    type: "income" as "income" | "expense",
-    amount: "",
-    category: "",
-    note: "",
-    transaction_date: new Date().toISOString().split('T')[0],
+  const form = useForm<TransactionFormData>({
+    resolver: zodResolver(transactionSchema),
+    defaultValues: {
+      type: "income",
+      amount: 0,
+      category: "",
+      note: "",
+      transaction_date: new Date().toISOString().split('T')[0],
+    },
   });
 
   useEffect(() => {
@@ -74,19 +80,16 @@ export default function ProjectDetail() {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-
+  const handleSubmit = async (data: TransactionFormData) => {
     if (editingTransaction) {
       const { error } = await supabase
         .from("transactions")
         .update({
-          type: formData.type,
-          amount: parseFloat(formData.amount),
-          category: formData.category || null,
-          note: formData.note || null,
-          transaction_date: formData.transaction_date,
+          type: data.type,
+          amount: data.amount,
+          category: data.category || null,
+          note: data.note || null,
+          transaction_date: data.transaction_date,
         })
         .eq("id", editingTransaction.id);
 
@@ -103,23 +106,17 @@ export default function ProjectDetail() {
         });
         setOpen(false);
         setEditingTransaction(null);
-        setFormData({
-          type: "income",
-          amount: "",
-          category: "",
-          note: "",
-          transaction_date: new Date().toISOString().split('T')[0],
-        });
+        form.reset();
         loadTransactions();
       }
     } else {
       const { error } = await supabase.from("transactions").insert({
         project_id: id,
-        type: formData.type,
-        amount: parseFloat(formData.amount),
-        category: formData.category || null,
-        note: formData.note || null,
-        transaction_date: formData.transaction_date,
+        type: data.type,
+        amount: data.amount,
+        category: data.category || null,
+        note: data.note || null,
+        transaction_date: data.transaction_date,
       });
 
       if (error) {
@@ -134,24 +131,17 @@ export default function ProjectDetail() {
           description: "La transazione è stata registrata",
         });
         setOpen(false);
-        setFormData({
-          type: "income",
-          amount: "",
-          category: "",
-          note: "",
-          transaction_date: new Date().toISOString().split('T')[0],
-        });
+        form.reset();
         loadTransactions();
       }
     }
-    setSubmitting(false);
   };
 
   const handleEdit = (transaction: any) => {
     setEditingTransaction(transaction);
-    setFormData({
+    form.reset({
       type: transaction.type,
-      amount: transaction.amount.toString(),
+      amount: transaction.amount,
       category: transaction.category || "",
       note: transaction.note || "",
       transaction_date: transaction.transaction_date,
@@ -260,13 +250,7 @@ export default function ProjectDetail() {
           setOpen(open);
           if (!open) {
             setEditingTransaction(null);
-            setFormData({
-              type: "income",
-              amount: "",
-              category: "",
-              note: "",
-              transaction_date: new Date().toISOString().split('T')[0],
-            });
+            form.reset();
           }
         }}>
           <DialogTrigger asChild>
@@ -282,61 +266,93 @@ export default function ProjectDetail() {
                 {editingTransaction ? "Modifica i dati della transazione" : "Registra un'entrata o un'uscita per questo progetto"}
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label>Tipo *</Label>
-                <Select value={formData.type} onValueChange={(value: any) => setFormData({ ...formData, type: value })}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="income">Entrata</SelectItem>
-                    <SelectItem value="expense">Uscita</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="amount">Importo * ({project.currency})</Label>
-                <Input
-                  id="amount"
-                  type="number"
-                  step="0.01"
-                  value={formData.amount}
-                  onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                  required
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Tipo *</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="income">Entrata</SelectItem>
+                          <SelectItem value="expense">Uscita</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">Categoria</Label>
-                <Input
-                  id="category"
-                  value={formData.category}
-                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                  placeholder="es. Vendite, Marketing, Stipendi"
+                <FormField
+                  control={form.control}
+                  name="amount"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Importo * ({project.currency})</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          {...field}
+                          value={field.value || ""}
+                          onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : 0)}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="note">Note</Label>
-                <Textarea
-                  id="note"
-                  value={formData.note}
-                  onChange={(e) => setFormData({ ...formData, note: e.target.value })}
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Categoria</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="es. Vendite, Marketing, Stipendi" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="transaction_date">Data</Label>
-                <Input
-                  id="transaction_date"
-                  type="date"
-                  value={formData.transaction_date}
-                  onChange={(e) => setFormData({ ...formData, transaction_date: e.target.value })}
+                <FormField
+                  control={form.control}
+                  name="note"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Note</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {editingTransaction ? "Salva Modifiche" : "Aggiungi"}
-              </Button>
-            </form>
+                <FormField
+                  control={form.control}
+                  name="transaction_date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {editingTransaction ? "Salva Modifiche" : "Aggiungi"}
+                </Button>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>

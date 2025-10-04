@@ -11,6 +11,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Plus, Loader2, TrendingUp, Building2, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { projectSchema, type ProjectFormData } from "@/lib/schemas/projectSchema";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 export default function Projects() {
   const { toast } = useToast();
@@ -20,17 +24,19 @@ export default function Projects() {
   const [canCreate, setCanCreate] = useState(true);
   const [projectLimit, setProjectLimit] = useState({ current: 0, max: 0, tier: 'free' as 'free' | 'pro' | 'business' | 'lifetime' });
   const [open, setOpen] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
   
-  const [formData, setFormData] = useState({
-    name: "",
-    industry: "",
-    description: "",
-    target_revenue: "",
-    currency: "EUR",
-    start_date: new Date().toISOString().split('T')[0],
+  const form = useForm<ProjectFormData>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {
+      name: "",
+      industry: "",
+      description: "",
+      target_revenue: undefined,
+      currency: "EUR",
+      start_date: new Date().toISOString().split('T')[0],
+    },
   });
 
   useEffect(() => {
@@ -85,21 +91,18 @@ export default function Projects() {
     setCanCreate((count || 0) < maxProjects);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-
+  const handleSubmit = async (data: ProjectFormData) => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
     const { error } = await supabase.from("projects").insert({
       user_id: user.id,
-      name: formData.name,
-      industry: formData.industry || null,
-      description: formData.description || null,
-      target_revenue: formData.target_revenue ? parseFloat(formData.target_revenue) : null,
-      currency: formData.currency,
-      start_date: formData.start_date,
+      name: data.name,
+      industry: data.industry || null,
+      description: data.description || null,
+      target_revenue: data.target_revenue || null,
+      currency: data.currency,
+      start_date: data.start_date,
     });
 
     if (error) {
@@ -114,18 +117,10 @@ export default function Projects() {
         description: "Il progetto è stato creato con successo",
       });
       setOpen(false);
-      setFormData({
-        name: "",
-        industry: "",
-        description: "",
-        target_revenue: "",
-        currency: "EUR",
-        start_date: new Date().toISOString().split('T')[0],
-      });
+      form.reset();
       loadProjects();
       checkCanCreate();
     }
-    setSubmitting(false);
   };
 
   const handleDelete = async () => {
@@ -192,73 +187,109 @@ export default function Projects() {
                 Inserisci i dettagli del tuo progetto aziendale
               </DialogDescription>
             </DialogHeader>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Nome Progetto *</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  required
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Nome Progetto *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="industry">Settore</Label>
-                <Input
-                  id="industry"
-                  value={formData.industry}
-                  onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
-                  placeholder="es. Tech, Retail, Consulting"
+                <FormField
+                  control={form.control}
+                  name="industry"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Settore</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="es. Tech, Retail, Consulting" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="description">Descrizione</Label>
-                <Textarea
-                  id="description"
-                  value={formData.description}
-                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  placeholder="Obiettivi e note sul progetto"
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Descrizione</FormLabel>
+                      <FormControl>
+                        <Textarea {...field} placeholder="Obiettivi e note sul progetto" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="target_revenue">Target Revenue</Label>
-                  <Input
-                    id="target_revenue"
-                    type="number"
-                    step="0.01"
-                    value={formData.target_revenue}
-                    onChange={(e) => setFormData({ ...formData, target_revenue: e.target.value })}
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField
+                    control={form.control}
+                    name="target_revenue"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Target Revenue</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.01"
+                            {...field}
+                            value={field.value || ""}
+                            onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="currency"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Valuta</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="EUR">EUR (€)</SelectItem>
+                            <SelectItem value="USD">USD ($)</SelectItem>
+                            <SelectItem value="GBP">GBP (£)</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="currency">Valuta</Label>
-                  <Select value={formData.currency} onValueChange={(value) => setFormData({ ...formData, currency: value })}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="EUR">EUR (€)</SelectItem>
-                      <SelectItem value="USD">USD ($)</SelectItem>
-                      <SelectItem value="GBP">GBP (£)</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="start_date">Data Inizio</Label>
-                <Input
-                  id="start_date"
-                  type="date"
-                  value={formData.start_date}
-                  onChange={(e) => setFormData({ ...formData, start_date: e.target.value })}
+                <FormField
+                  control={form.control}
+                  name="start_date"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Data Inizio</FormLabel>
+                      <FormControl>
+                        <Input type="date" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-              <Button type="submit" className="w-full" disabled={submitting}>
-                {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Crea Progetto
-              </Button>
-            </form>
+                <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  Crea Progetto
+                </Button>
+              </form>
+            </Form>
           </DialogContent>
         </Dialog>
       </div>
