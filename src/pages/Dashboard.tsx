@@ -28,41 +28,57 @@ export default function Dashboard() {
   }, []);
 
   const loadDashboardData = async () => {
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
 
-    const { data: projects } = await supabase
-      .from("projects")
-      .select("*, transactions(*)")
-      .order("created_at", { ascending: false });
+      const { data: projects, error } = await supabase
+        .from("projects")
+        .select("*, transactions(*)")
+        .order("created_at", { ascending: false });
 
-    if (projects) {
-      setAllProjects(projects);
-      
-      let totalIncome = 0;
-      let totalExpense = 0;
-      const currency = projects[0]?.currency || "EUR";
+      if (error) {
+        console.error("Error loading projects:", error);
+        setLoading(false);
+        return;
+      }
 
-      projects.forEach((project) => {
-        project.transactions?.forEach((t: any) => {
-          if (t.type === "income") {
-            totalIncome += parseFloat(t.amount);
-          } else {
-            totalExpense += parseFloat(t.amount);
-          }
+      if (projects) {
+        setAllProjects(projects);
+        
+        let totalIncome = 0;
+        let totalExpense = 0;
+        const currency = projects[0]?.currency || "EUR";
+
+        projects.forEach((project) => {
+          project.transactions?.forEach((t: any) => {
+            try {
+              const amount = parseFloat(t.amount || 0);
+              if (t.type === "income") {
+                totalIncome += amount;
+              } else {
+                totalExpense += amount;
+              }
+            } catch (error) {
+              console.error("Error parsing transaction amount:", error);
+            }
+          });
         });
-      });
 
-      setStats({
-        totalProjects: projects.length,
-        totalIncome,
-        totalExpense,
-        netProfit: totalIncome - totalExpense,
-        currency,
-      });
+        setStats({
+          totalProjects: projects.length,
+          totalIncome,
+          totalExpense,
+          netProfit: totalIncome - totalExpense,
+          currency,
+        });
+      }
+
+      setLoading(false);
+    } catch (error) {
+      console.error("Error in loadDashboardData:", error);
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const filteredProjects = useMemo(() => {
@@ -122,10 +138,15 @@ export default function Dashboard() {
 
       filteredProjects.forEach(project => {
         project.transactions?.forEach((t: any) => {
-          const tDate = format(parseISO(t.transaction_date), "yyyy-MM-dd");
-          if (tDate === dateStr) {
-            if (t.type === "income") income += parseFloat(t.amount);
-            else expense += parseFloat(t.amount);
+          try {
+            if (!t.transaction_date) return;
+            const tDate = format(parseISO(t.transaction_date), "yyyy-MM-dd");
+            if (tDate === dateStr) {
+              if (t.type === "income") income += parseFloat(t.amount || 0);
+              else expense += parseFloat(t.amount || 0);
+            }
+          } catch (error) {
+            console.error("Error parsing transaction date:", error);
           }
         });
       });
