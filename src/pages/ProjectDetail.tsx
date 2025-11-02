@@ -11,6 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { ArrowLeft, Plus, Loader2, TrendingUp, TrendingDown, Pencil, Trash2, MoreVertical } from "lucide-react";
+import { CSVUpload } from "@/components/CSVUpload";
+import { MonthlyReportDownload } from "@/components/MonthlyReportDownload";
 import { Badge } from "@/components/ui/badge";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -246,6 +248,10 @@ export default function ProjectDetail() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
+        <div className="flex gap-2">
+          <CSVUpload projectId={id!} onUploadComplete={loadTransactions} />
+          <MonthlyReportDownload project={project} transactions={transactions} />
+        </div>
         <Dialog open={open} onOpenChange={(open) => {
           setOpen(open);
           if (!open) {
