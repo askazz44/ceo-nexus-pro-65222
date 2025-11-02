@@ -98,10 +98,10 @@ export default function Auth() {
       <Card className="w-full max-w-md shadow-xl animate-fade-up backdrop-blur-sm bg-card/95">
         <CardHeader className="space-y-1 text-center">
           <div className="mx-auto mb-2 h-12 w-12 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow">
-            <span className="text-2xl font-bold text-primary-foreground">CT</span>
+            <span className="text-2xl font-bold text-primary-foreground">GF</span>
           </div>
           <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            CEO Tracker
+            GainFlow
           </CardTitle>
           <CardDescription className="text-center">
             Gestisci i tuoi progetti aziendali con stile

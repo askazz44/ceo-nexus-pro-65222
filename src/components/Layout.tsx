@@ -70,10 +70,10 @@ export default function Layout() {
           <div className="mr-4 flex">
             <Link to="/" className="mr-6 flex items-center space-x-2 group">
               <div className="h-9 w-9 rounded-lg bg-gradient-primary flex items-center justify-center shadow-md group-hover:shadow-glow transition-all">
-                <span className="text-lg font-bold text-primary-foreground">CT</span>
+                <span className="text-lg font-bold text-primary-foreground">GF</span>
               </div>
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                CEO Tracker
+                GainFlow
               </span>
             </Link>
           </div>

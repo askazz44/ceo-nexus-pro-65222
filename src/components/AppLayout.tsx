@@ -59,9 +59,9 @@ export default function AppLayout() {
           <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-2">
               <div className="h-8 w-8 rounded-lg bg-gradient-to-r from-primary to-accent flex items-center justify-center">
-                <span className="text-lg font-bold text-primary-foreground">CT</span>
+                <span className="text-lg font-bold text-primary-foreground">GF</span>
               </div>
-              <span className="font-bold text-xl hidden sm:inline">CEO Tracker</span>
+              <span className="font-bold text-xl hidden sm:inline">GainFlow</span>
             </Link>
             
             {/* Desktop Nav */}
