@@ -20,6 +20,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { transactionSchema, type TransactionFormData } from "@/lib/schemas/transactionSchema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ProjectDetail() {
   const { id } = useParams();
@@ -33,6 +35,10 @@ export default function ProjectDetail() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
   const [deleteProjectDialogOpen, setDeleteProjectDialogOpen] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  const [loadingTransactions, setLoadingTransactions] = useState(false);
+  const ITEMS_PER_PAGE = 20;
 
   const form = useForm<TransactionFormData>({
     resolver: zodResolver(transactionSchema),
@@ -48,7 +54,7 @@ export default function ProjectDetail() {
   useEffect(() => {
     loadProject();
     loadTransactions();
-  }, [id]);
+  }, [id, page]);
 
   const loadProject = async () => {
     const { data, error } = await supabase
@@ -71,15 +77,22 @@ export default function ProjectDetail() {
   };
 
   const loadTransactions = async () => {
-    const { data, error } = await supabase
-      .from("transactions")
-      .select("*")
-      .eq("project_id", id)
-      .order("transaction_date", { ascending: false });
+    setLoadingTransactions(true);
+    const from = page * ITEMS_PER_PAGE;
+    const to = from + ITEMS_PER_PAGE - 1;
 
-    if (!error) {
-      setTransactions(data || []);
+    const { data, error, count } = await supabase
+      .from("transactions")
+      .select("*", { count: 'exact' })
+      .eq("project_id", id)
+      .order("transaction_date", { ascending: false })
+      .range(from, to);
+
+    if (!error && data) {
+      setTransactions(data);
+      setTotalPages(Math.ceil((count || 0) / ITEMS_PER_PAGE));
     }
+    setLoadingTransactions(false);
   };
 
   const handleSubmit = async (data: TransactionFormData) => {
@@ -109,6 +122,7 @@ export default function ProjectDetail() {
         setOpen(false);
         setEditingTransaction(null);
         form.reset();
+        setPage(0);
         loadTransactions();
       }
     } else {
@@ -134,6 +148,7 @@ export default function ProjectDetail() {
         });
         setOpen(false);
         form.reset();
+        setPage(0);
         loadTransactions();
       }
     }
@@ -170,6 +185,7 @@ export default function ProjectDetail() {
         title: "Transazione eliminata",
         description: "La transazione è stata rimossa",
       });
+      setPage(0);
       loadTransactions();
     }
     setDeleteDialogOpen(false);
@@ -422,62 +438,115 @@ export default function ProjectDetail() {
               <CardDescription>Tutte le entrate e uscite del progetto</CardDescription>
             </CardHeader>
             <CardContent>
-              {transactions.length === 0 ? (
-                <p className="text-center text-muted-foreground py-8">
-                  Nessuna transazione registrata
-                </p>
-              ) : (
+              {loadingTransactions ? (
                 <div className="space-y-2">
-                  {transactions.map((transaction) => (
-                    <div
-                      key={transaction.id}
-                      className="flex items-center justify-between p-4 border rounded-lg"
-                    >
-                      <div className="flex items-center gap-4">
-                        {transaction.type === "income" ? (
-                          <TrendingUp className="h-5 w-5 text-chart-1" />
-                        ) : (
-                          <TrendingDown className="h-5 w-5 text-chart-2" />
-                        )}
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium">
-                              {new Intl.NumberFormat('it-IT', {
-                                style: 'currency',
-                                currency: project.currency,
-                              }).format(transaction.amount)}
-                            </span>
-                            {transaction.category && (
-                              <Badge variant="secondary">{transaction.category}</Badge>
-                            )}
-                          </div>
-                          {transaction.note && (
-                            <p className="text-sm text-muted-foreground">{transaction.note}</p>
-                          )}
+                  {[...Array(5)].map((_, i) => (
+                    <div key={i} className="flex items-center justify-between p-4 border rounded-lg">
+                      <div className="flex items-center gap-4 flex-1">
+                        <Skeleton className="h-5 w-5 rounded-full" />
+                        <div className="space-y-2 flex-1">
+                          <Skeleton className="h-4 w-32" />
+                          <Skeleton className="h-3 w-48" />
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className="text-sm text-muted-foreground mr-2">
-                          {new Date(transaction.transaction_date).toLocaleDateString('it-IT')}
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleEdit(transaction)}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => openDeleteDialog(transaction.id)}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                        <Skeleton className="h-3 w-20" />
+                        <Skeleton className="h-8 w-8" />
+                        <Skeleton className="h-8 w-8" />
                       </div>
                     </div>
                   ))}
                 </div>
+              ) : transactions.length === 0 ? (
+                <p className="text-center text-muted-foreground py-8">
+                  Nessuna transazione registrata
+                </p>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    {transactions.map((transaction) => (
+                      <div
+                        key={transaction.id}
+                        className="flex items-center justify-between p-4 border rounded-lg"
+                      >
+                        <div className="flex items-center gap-4">
+                          {transaction.type === "income" ? (
+                            <TrendingUp className="h-5 w-5 text-chart-1" />
+                          ) : (
+                            <TrendingDown className="h-5 w-5 text-chart-2" />
+                          )}
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">
+                                {new Intl.NumberFormat('it-IT', {
+                                  style: 'currency',
+                                  currency: project.currency,
+                                }).format(transaction.amount)}
+                              </span>
+                              {transaction.category && (
+                                <Badge variant="secondary">{transaction.category}</Badge>
+                              )}
+                            </div>
+                            {transaction.note && (
+                              <p className="text-sm text-muted-foreground">{transaction.note}</p>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="text-sm text-muted-foreground mr-2">
+                            {new Date(transaction.transaction_date).toLocaleDateString('it-IT')}
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => handleEdit(transaction)}
+                          >
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => openDeleteDialog(transaction.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {totalPages > 1 && (
+                    <Pagination className="mt-4">
+                      <PaginationContent>
+                        <PaginationItem>
+                          <PaginationPrevious 
+                            onClick={() => setPage(p => Math.max(0, p - 1))}
+                            className={page === 0 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                        
+                        {[...Array(totalPages)].map((_, i) => (
+                          <PaginationItem key={i}>
+                            <PaginationLink
+                              onClick={() => setPage(i)}
+                              isActive={page === i}
+                              className="cursor-pointer"
+                            >
+                              {i + 1}
+                            </PaginationLink>
+                          </PaginationItem>
+                        ))}
+                        
+                        <PaginationItem>
+                          <PaginationNext 
+                            onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                            className={page >= totalPages - 1 ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                          />
+                        </PaginationItem>
+                      </PaginationContent>
+                    </Pagination>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
