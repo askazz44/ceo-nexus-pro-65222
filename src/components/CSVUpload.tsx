@@ -7,6 +7,7 @@ import { Upload, Loader2, FileSpreadsheet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent } from "@/components/ui/card";
+import { transactionSchema } from "@/lib/schemas/transactionSchema";
 
 interface CSVUploadProps {
   projectId: string;
@@ -47,12 +48,35 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
             return;
           }
 
+          // Validate all transactions against schema before insertion
+          const validatedTransactions = [];
+          const validationErrors = [];
+
+          for (let i = 0; i < transactions.length; i++) {
+            const result = transactionSchema.safeParse(transactions[i]);
+            if (result.success) {
+              validatedTransactions.push({
+                ...result.data,
+                project_id: projectId,
+              });
+            } else {
+              validationErrors.push(`Riga ${i + 1}: ${result.error.errors[0].message}`);
+            }
+          }
+
+          if (validationErrors.length > 0) {
+            toast({
+              title: "Errori di validazione",
+              description: `${validationErrors.length} transazioni non valide. Prima errore: ${validationErrors[0]}`,
+              variant: "destructive",
+            });
+            setUploading(false);
+            return;
+          }
+
           const { error } = await supabase
             .from("transactions")
-            .insert(transactions.map(t => ({
-              ...t,
-              project_id: projectId,
-            })));
+            .insert(validatedTransactions);
 
           if (error) throw error;
 
