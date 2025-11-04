@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ErrorBoundary } from "./components/ErrorBoundary";
+import { OfflineIndicator } from "./components/OfflineIndicator";
 import AppLayout from "./components/AppLayout";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
@@ -55,29 +57,32 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/auth" element={<Auth />} />
-          
-          <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/project/:id" element={<ProjectDetail />} />
-            <Route path="/subscription" element={<Subscription />} />
-            <Route path="/subscription/success" element={<SubscriptionSuccess />} />
-            <Route path="/subscription/canceled" element={<SubscriptionCanceled />} />
-            <Route path="/admin" element={<Admin />} />
-          </Route>
+  <ErrorBoundary>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <OfflineIndicator />
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/auth" element={<Auth />} />
+            
+            <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
+              <Route path="/" element={<Dashboard />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/project/:id" element={<ProjectDetail />} />
+              <Route path="/subscription" element={<Subscription />} />
+              <Route path="/subscription/success" element={<SubscriptionSuccess />} />
+              <Route path="/subscription/canceled" element={<SubscriptionCanceled />} />
+              <Route path="/admin" element={<Admin />} />
+            </Route>
 
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
-  </QueryClientProvider>
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </ErrorBoundary>
 );
 
 export default App;

@@ -150,8 +150,10 @@ All colors MUST be HSL.
 
   body {
     @apply bg-background text-foreground;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     font-feature-settings: "cv11", "ss01";
     font-variation-settings: "opsz" auto;
+    font-optical-sizing: auto;
   }
 }
 
@@ -182,5 +184,13 @@ All colors MUST be HSL.
 
   .btn-glow {
     @apply transition-all duration-300 hover:shadow-glow;
+  }
+
+  .glass {
+    @apply bg-card/50 backdrop-blur-xl border border-border/50;
+  }
+
+  .glass-hover {
+    @apply glass hover:bg-card/60 transition-all duration-300;
   }
 }

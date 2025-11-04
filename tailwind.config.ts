@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
@@ -122,6 +125,14 @@ export default {
             transform: "translateY(0)",
           },
         },
+        "slide-down": {
+          "0%": {
+            transform: "translateY(-100%)",
+          },
+          "100%": {
+            transform: "translateY(0)",
+          },
+        },
         "scale-in": {
           "0%": {
             opacity: "0",
@@ -148,6 +159,7 @@ export default {
         "fade-up": "fade-up 0.6s ease-out",
         "scale-in": "scale-in 0.4s ease-out",
         "shimmer": "shimmer 2s linear infinite",
+        "slide-down": "slide-down 0.3s ease-out",
       },
     },
   },

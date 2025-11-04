@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -219,15 +219,21 @@ export default function ProjectDetail() {
     setDeleteProjectDialogOpen(false);
   };
 
-  const totalIncome = transactions
-    .filter(t => t.type === "income")
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-
-  const totalExpense = transactions
-    .filter(t => t.type === "expense")
-    .reduce((sum, t) => sum + parseFloat(t.amount), 0);
-
-  const netProfit = totalIncome - totalExpense;
+  const { totalIncome, totalExpense, netProfit } = useMemo(() => {
+    const income = transactions
+      .filter(t => t.type === "income")
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
+    const expense = transactions
+      .filter(t => t.type === "expense")
+      .reduce((sum, t) => sum + parseFloat(t.amount), 0);
+    
+    return {
+      totalIncome: income,
+      totalExpense: expense,
+      netProfit: income - expense,
+    };
+  }, [transactions]);
 
   if (loading) {
     return (

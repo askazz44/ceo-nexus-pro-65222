@@ -1,21 +1,37 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { authSignUpSchema, authSignInSchema, type AuthSignUpFormData, type AuthSignInFormData } from "@/lib/schemas/passwordSchema";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
+  
+  const signUpForm = useForm<AuthSignUpFormData>({
+    resolver: zodResolver(authSignUpSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+      fullName: "",
+    },
+  });
+
+  const signInForm = useForm<AuthSignInFormData>({
+    resolver: zodResolver(authSignInSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
@@ -33,58 +49,70 @@ export default function Auth() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/`,
-        data: {
-          full_name: fullName,
-        }
-      }
-    });
-
-    if (error) {
-      toast({
-        title: "Errore durante la registrazione",
-        description: error.message,
-        variant: "destructive",
+  const handleSignUp = async (data: AuthSignUpFormData) => {
+    try {
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            full_name: data.fullName,
+          },
+        },
       });
-    } else {
+
+      if (signUpError) throw signUpError;
+
+      if (signUpData.user) {
+        const { error: profileError } = await supabase
+          .from("profiles")
+          .insert({
+            id: signUpData.user.id,
+            email: signUpData.user.email!,
+            full_name: data.fullName,
+            subscription_tier: "free",
+          });
+
+        if (profileError) throw profileError;
+      }
+
       toast({
         title: "Registrazione completata",
-        description: "Accesso effettuato con successo",
+        description: "Account creato con successo",
       });
-    }
-    setLoading(false);
-  };
 
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
-    if (error) {
+      navigate("/");
+    } catch (error: any) {
       toast({
-        title: "Errore durante l'accesso",
+        title: "Errore",
         description: error.message,
         variant: "destructive",
       });
-    } else {
+    }
+  };
+
+  const handleSignIn = async (data: AuthSignInFormData) => {
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (error) throw error;
+
       toast({
-        title: "Accesso effettuato",
+        title: "Login effettuato",
         description: "Benvenuto!",
       });
+
+      navigate("/");
+    } catch (error: any) {
+      toast({
+        title: "Errore",
+        description: error.message,
+        variant: "destructive",
+      });
     }
-    setLoading(false);
   };
 
   return (
@@ -95,7 +123,7 @@ export default function Auth() {
         <div className="absolute bottom-20 right-10 w-72 h-72 bg-accent/30 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-1000"></div>
       </div>
       
-      <Card className="w-full max-w-md shadow-xl animate-fade-up backdrop-blur-sm bg-card/95">
+      <Card className="w-full max-w-md shadow-xl animate-fade-up glass">
         <CardHeader className="space-y-1 text-center">
           <div className="mx-auto mb-2 h-12 w-12 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow">
             <span className="text-2xl font-bold text-primary-foreground">GF</span>
@@ -115,75 +143,121 @@ export default function Auth() {
             </TabsList>
             
             <TabsContent value="signin">
-              <form onSubmit={handleSignIn} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="email-signin">Email</Label>
-                  <Input
-                    id="email-signin"
-                    type="email"
-                    placeholder="nome@azienda.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+              <Form {...signInForm}>
+                <form onSubmit={signInForm.handleSubmit(handleSignIn)} className="space-y-4">
+                  <FormField
+                    control={signInForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="nome@esempio.com"
+                            className="glass-hover"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password-signin">Password</Label>
-                  <Input
-                    id="password-signin"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
+                  <FormField
+                    control={signInForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            className="glass-hover"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <Button type="submit" className="w-full btn-glow" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Accedi
-                </Button>
-              </form>
+                  <Button 
+                    type="submit" 
+                    className="w-full btn-glow" 
+                    disabled={signInForm.formState.isSubmitting}
+                  >
+                    {signInForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Accedi
+                  </Button>
+                </form>
+              </Form>
             </TabsContent>
             
             <TabsContent value="signup">
-              <form onSubmit={handleSignUp} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="fullname">Nome completo</Label>
-                  <Input
-                    id="fullname"
-                    type="text"
-                    placeholder="Mario Rossi"
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    required
+              <Form {...signUpForm}>
+                <form onSubmit={signUpForm.handleSubmit(handleSignUp)} className="space-y-4">
+                  <FormField
+                    control={signUpForm.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Nome Completo</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="text"
+                            placeholder="Mario Rossi"
+                            className="glass-hover"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email-signup">Email</Label>
-                  <Input
-                    id="email-signup"
-                    type="email"
-                    placeholder="nome@azienda.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
+                  <FormField
+                    control={signUpForm.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Email</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="email"
+                            placeholder="nome@esempio.com"
+                            className="glass-hover"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="password-signup">Password</Label>
-                  <Input
-                    id="password-signup"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
+                  <FormField
+                    control={signUpForm.control}
+                    name="password"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Password</FormLabel>
+                        <FormControl>
+                          <Input
+                            type="password"
+                            className="glass-hover"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage className="text-xs" />
+                      </FormItem>
+                    )}
                   />
-                </div>
-                <Button type="submit" className="w-full btn-glow" disabled={loading}>
-                  {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Registrati
-                </Button>
-              </form>
+                  <Button 
+                    type="submit" 
+                    className="w-full btn-glow" 
+                    disabled={signUpForm.formState.isSubmitting}
+                  >
+                    {signUpForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Registrati
+                  </Button>
+                </form>
+              </Form>
             </TabsContent>
           </Tabs>
         </CardContent>

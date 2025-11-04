@@ -1,6 +1,7 @@
 import { Outlet, Link, useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "./ThemeToggle";
 import { 
   LayoutDashboard, 
   FolderKanban, 
@@ -86,6 +87,7 @@ export default function AppLayout() {
           </div>
 
           <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button 
               variant="ghost" 
               size="sm" 
