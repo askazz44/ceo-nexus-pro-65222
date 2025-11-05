@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Loader2, Users, Shield, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { exportUserDatabase, downloadDatabaseExport } from "@/lib/utils/databaseExport";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Admin() {
   const { toast } = useToast();
@@ -77,8 +78,41 @@ export default function Admin() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <div>
+              <Skeleton className="h-9 w-48 mb-2" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          </div>
+          <Skeleton className="h-10 w-40" />
+        </div>
+        <div className="grid gap-4 md:grid-cols-3">
+          {[1, 2, 3].map((i) => (
+            <Card key={i}>
+              <CardHeader>
+                <Skeleton className="h-4 w-32 mb-2" />
+                <Skeleton className="h-8 w-16" />
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-6 w-48 mb-2" />
+            <Skeleton className="h-4 w-64" />
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="p-4 border rounded-lg">
+                <Skeleton className="h-5 w-48 mb-2" />
+                <Skeleton className="h-4 w-64" />
+              </div>
+            ))}
+          </CardContent>
+        </Card>
       </div>
     );
   }

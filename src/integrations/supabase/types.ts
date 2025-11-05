@@ -175,18 +175,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      can_create_project: {
-        Args: { user_id: string }
-        Returns: boolean
+      can_create_project: { Args: { user_id: string }; Returns: boolean }
+      get_dashboard_stats: {
+        Args: { p_user_id: string }
+        Returns: {
+          currency: string
+          total_expense: number
+          total_income: number
+          total_projects: number
+        }[]
+      }
+      get_period_comparison: {
+        Args: { p_user_id: string }
+        Returns: {
+          current_expense: number
+          current_income: number
+          previous_expense: number
+          previous_income: number
+        }[]
       }
       get_project_limit: {
         Args: { tier: Database["public"]["Enums"]["subscription_tier"] }
         Returns: number
       }
-      is_admin: {
-        Args: { user_id: string }
-        Returns: boolean
-      }
+      is_admin: { Args: { user_id: string }; Returns: boolean }
     }
     Enums: {
       subscription_tier: "free" | "pro" | "business" | "lifetime"

@@ -1,13 +1,15 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, TrendingUp, TrendingDown, Wallet, FolderKanban, Calendar, Filter } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, Wallet, FolderKanban, Calendar, Filter, ArrowUp, ArrowDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, parseISO } from "date-fns";
 import { it } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -18,6 +20,12 @@ export default function Dashboard() {
     totalExpense: 0,
     netProfit: 0,
     currency: "EUR",
+  });
+  const [periodComparison, setPeriodComparison] = useState({
+    currentIncome: 0,
+    currentExpense: 0,
+    previousIncome: 0,
+    previousExpense: 0,
   });
   const [allProjects, setAllProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("all");
@@ -32,6 +40,38 @@ export default function Dashboard() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return;
 
+      // Usa RPC per statistiche ottimizzate
+      const { data: statsData, error: statsError } = await supabase
+        .rpc('get_dashboard_stats', { p_user_id: user.id });
+
+      if (statsError) {
+        console.error("Error loading stats:", statsError);
+      } else if (statsData && statsData.length > 0) {
+        const s = statsData[0];
+        setStats({
+          totalProjects: Number(s.total_projects),
+          totalIncome: Number(s.total_income),
+          totalExpense: Number(s.total_expense),
+          netProfit: Number(s.total_income) - Number(s.total_expense),
+          currency: s.currency,
+        });
+      }
+
+      // Carica confronto periodi
+      const { data: comparisonData } = await supabase
+        .rpc('get_period_comparison', { p_user_id: user.id });
+
+      if (comparisonData && comparisonData.length > 0) {
+        const c = comparisonData[0];
+        setPeriodComparison({
+          currentIncome: Number(c.current_income),
+          currentExpense: Number(c.current_expense),
+          previousIncome: Number(c.previous_income),
+          previousExpense: Number(c.previous_expense),
+        });
+      }
+
+      // Carica progetti con transazioni per grafici
       const { data: projects, error } = await supabase
         .from("projects")
         .select("*, transactions(*)")
@@ -39,39 +79,8 @@ export default function Dashboard() {
 
       if (error) {
         console.error("Error loading projects:", error);
-        setLoading(false);
-        return;
-      }
-
-      if (projects) {
+      } else if (projects) {
         setAllProjects(projects);
-        
-        let totalIncome = 0;
-        let totalExpense = 0;
-        const currency = projects[0]?.currency || "EUR";
-
-        projects.forEach((project) => {
-          project.transactions?.forEach((t: any) => {
-            try {
-              const amount = parseFloat(t.amount || 0);
-              if (t.type === "income") {
-                totalIncome += amount;
-              } else {
-                totalExpense += amount;
-              }
-            } catch (error) {
-              console.error("Error parsing transaction amount:", error);
-            }
-          });
-        });
-
-        setStats({
-          totalProjects: projects.length,
-          totalIncome,
-          totalExpense,
-          netProfit: totalIncome - totalExpense,
-          currency,
-        });
       }
 
       setLoading(false);
@@ -188,10 +197,54 @@ export default function Dashboard() {
 
   const COLORS = ['hsl(var(--primary))', 'hsl(var(--accent))', 'hsl(var(--income))', 'hsl(var(--expense))', 'hsl(var(--chart-1))', 'hsl(var(--chart-2))'];
 
+  const incomeGrowth = periodComparison.previousIncome > 0
+    ? ((periodComparison.currentIncome - periodComparison.previousIncome) / periodComparison.previousIncome) * 100
+    : 0;
+  const expenseGrowth = periodComparison.previousExpense > 0
+    ? ((periodComparison.currentExpense - periodComparison.previousExpense) / periodComparison.previousExpense) * 100
+    : 0;
+
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-96">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="space-y-6 animate-fade-in">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <Skeleton className="h-10 w-64 mb-2" />
+            <Skeleton className="h-4 w-48" />
+          </div>
+          <div className="flex gap-3">
+            <Skeleton className="h-10 w-[200px]" />
+            <Skeleton className="h-10 w-[180px]" />
+          </div>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+          {[1, 2, 3, 4].map((i) => (
+            <Card key={i}>
+              <CardHeader className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-8 w-24" />
+              </CardHeader>
+            </Card>
+          ))}
+        </div>
+        <div className="grid gap-6 md:grid-cols-2">
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[300px] w-full" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-6 w-48" />
+            </CardHeader>
+            <CardContent>
+              <Skeleton className="h-[300px] w-full" />
+            </CardContent>
+          </Card>
+        </div>
       </div>
     );
   }
@@ -263,7 +316,15 @@ export default function Dashboard() {
                 currency: filteredStats.currency,
               }).format(filteredStats.totalIncome)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">ricavi totali</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-xs text-muted-foreground">ricavi totali</p>
+              {incomeGrowth !== 0 && (
+                <Badge variant={incomeGrowth > 0 ? "default" : "destructive"} className="text-xs">
+                  {incomeGrowth > 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
+                  {Math.abs(incomeGrowth).toFixed(1)}%
+                </Badge>
+              )}
+            </div>
           </CardContent>
         </Card>
 
@@ -281,7 +342,15 @@ export default function Dashboard() {
                 currency: filteredStats.currency,
               }).format(filteredStats.totalExpense)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">costi totali</p>
+            <div className="flex items-center gap-2 mt-1">
+              <p className="text-xs text-muted-foreground">costi totali</p>
+              {expenseGrowth !== 0 && (
+                <Badge variant={expenseGrowth < 0 ? "default" : "destructive"} className="text-xs">
+                  {expenseGrowth > 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
+                  {Math.abs(expenseGrowth).toFixed(1)}%
+                </Badge>
+              )}
+            </div>
           </CardContent>
         </Card>
 
