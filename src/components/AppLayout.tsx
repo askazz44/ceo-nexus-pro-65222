@@ -9,7 +9,8 @@ import {
   LogOut,
   Menu,
   X,
-  Shield
+  Shield,
+  Settings
 } from "lucide-react";
 import { useState, useEffect } from "react";
 
@@ -46,6 +47,7 @@ export default function AppLayout() {
     { path: "/", label: "Dashboard", icon: LayoutDashboard },
     { path: "/projects", label: "Progetti", icon: FolderKanban },
     { path: "/subscription", label: "Abbonamento", icon: CreditCard },
+    { path: "/settings", label: "Impostazioni", icon: Settings },
   ];
 
   if (isAdmin) {
