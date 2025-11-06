@@ -4,11 +4,16 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, FolderKanban, Settings, LogOut, User, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { Footer } from "@/components/Footer";
+import { useTranslation } from "@/lib/i18n";
 
 export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [user, setUser] = useState<any>(null);
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -48,19 +53,19 @@ export default function Layout() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     toast({
-      title: "Disconnesso",
-      description: "A presto!",
+      title: t('signOut'),
+      description: t('signOutMessage'),
     });
   };
 
   const navItems = [
-    { path: "/", icon: LayoutDashboard, label: "Dashboard" },
-    { path: "/projects", icon: FolderKanban, label: "Progetti" },
-    { path: "/subscription", icon: CreditCard, label: "Abbonamento" },
+    { path: "/", icon: LayoutDashboard, label: t('dashboard') },
+    { path: "/projects", icon: FolderKanban, label: t('projects') },
+    { path: "/subscription", icon: CreditCard, label: t('subscription') },
   ];
 
   if (isAdmin) {
-    navItems.push({ path: "/admin", icon: Settings, label: "Admin" });
+    navItems.push({ path: "/admin", icon: Settings, label: t('admin') });
   }
 
   return (
@@ -105,15 +110,18 @@ export default function Layout() {
                 {user?.email}
               </span>
             </div>
+            <ThemeToggle />
+            <LanguageToggle />
             <Button variant="ghost" size="icon" onClick={handleSignOut} className="hover:bg-destructive/10 hover:text-destructive">
               <LogOut className="h-4 w-4" />
             </Button>
           </div>
         </div>
       </header>
-      <main className="container py-6">
+      <main className="container py-6 min-h-[calc(100vh-4rem-5rem)]">
         <Outlet />
       </main>
+      <Footer />
     </div>
   );
 }
