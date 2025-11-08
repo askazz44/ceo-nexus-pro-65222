@@ -36,6 +36,9 @@ export const translations = {
     madeBy: 'Realizzato da',
     feedback: 'Invia Feedback',
     
+    // Install
+    installApp: 'Installa GainFlow',
+    
     // Common
     loading: 'Caricamento...',
   },
@@ -71,6 +74,9 @@ export const translations = {
     // Footer
     madeBy: 'Made by',
     feedback: 'Send Feedback',
+    
+    // Install
+    installApp: 'Install GainFlow',
     
     // Common
     loading: 'Loading...',

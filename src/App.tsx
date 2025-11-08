@@ -17,6 +17,7 @@ import Subscription from "./pages/Subscription";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import SubscriptionCanceled from "./pages/SubscriptionCanceled";
 import Settings from "./pages/Settings";
+import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient({
@@ -67,6 +68,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/auth" element={<Auth />} />
+            <Route path="/install" element={<Install />} />
             
             <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               <Route path="/" element={<Dashboard />} />
