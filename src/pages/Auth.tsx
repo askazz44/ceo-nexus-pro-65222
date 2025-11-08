@@ -11,10 +11,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authSignUpSchema, authSignInSchema, type AuthSignUpFormData, type AuthSignInFormData } from "@/lib/schemas/passwordSchema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useTranslation } from "@/lib/i18n";
 
 export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t } = useTranslation();
   
   const signUpForm = useForm<AuthSignUpFormData>({
     resolver: zodResolver(authSignUpSchema),
@@ -77,14 +79,14 @@ export default function Auth() {
       }
 
       toast({
-        title: "Registrazione completata",
-        description: "Account creato con successo",
+        title: t('registrationComplete'),
+        description: t('accountCreated'),
       });
 
       navigate("/");
     } catch (error: any) {
       toast({
-        title: "Errore",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -101,14 +103,14 @@ export default function Auth() {
       if (error) throw error;
 
       toast({
-        title: "Login effettuato",
-        description: "Benvenuto!",
+        title: t('loginSuccess'),
+        description: t('welcome'),
       });
 
       navigate("/");
     } catch (error: any) {
       toast({
-        title: "Errore",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
@@ -132,14 +134,14 @@ export default function Auth() {
             GainFlow
           </CardTitle>
           <CardDescription className="text-center">
-            Gestisci i tuoi progetti aziendali con stile
+            {t('welcomeTagline')}
           </CardDescription>
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="signin">Accedi</TabsTrigger>
-              <TabsTrigger value="signup">Registrati</TabsTrigger>
+              <TabsTrigger value="signin">{t('signIn')}</TabsTrigger>
+              <TabsTrigger value="signup">{t('signUp')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="signin">
@@ -150,11 +152,11 @@ export default function Auth() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('email')}</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="nome@esempio.com"
+                            placeholder={t('emailPlaceholder')}
                             className="glass-hover"
                             {...field}
                           />
@@ -168,7 +170,7 @@ export default function Auth() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{t('password')}</FormLabel>
                         <FormControl>
                           <Input
                             type="password"
@@ -186,7 +188,7 @@ export default function Auth() {
                     disabled={signInForm.formState.isSubmitting}
                   >
                     {signInForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Accedi
+                    {t('signIn')}
                   </Button>
                 </form>
               </Form>
@@ -200,7 +202,7 @@ export default function Auth() {
                     name="fullName"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Nome Completo</FormLabel>
+                        <FormLabel>{t('fullName')}</FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -218,11 +220,11 @@ export default function Auth() {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Email</FormLabel>
+                        <FormLabel>{t('email')}</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder="nome@esempio.com"
+                            placeholder={t('emailPlaceholder')}
                             className="glass-hover"
                             {...field}
                           />
@@ -236,7 +238,7 @@ export default function Auth() {
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Password</FormLabel>
+                        <FormLabel>{t('password')}</FormLabel>
                         <FormControl>
                           <Input
                             type="password"
@@ -254,7 +256,7 @@ export default function Auth() {
                     disabled={signUpForm.formState.isSubmitting}
                   >
                     {signUpForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                    Registrati
+                    {t('signUp')}
                   </Button>
                 </form>
               </Form>

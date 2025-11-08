@@ -62,6 +62,7 @@ export default function Layout() {
     { path: "/", icon: LayoutDashboard, label: t('dashboard') },
     { path: "/projects", icon: FolderKanban, label: t('projects') },
     { path: "/subscription", icon: CreditCard, label: t('subscription') },
+    { path: "/settings", icon: Settings, label: t('settings') },
   ];
 
   if (isAdmin) {

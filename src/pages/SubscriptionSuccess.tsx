@@ -3,10 +3,12 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { CheckCircle } from "lucide-react";
+import { useTranslation } from "@/lib/i18n";
 
 const SubscriptionSuccess = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const sessionId = searchParams.get("session_id");
   const [countdown, setCountdown] = useState(5);
 
@@ -32,28 +34,30 @@ const SubscriptionSuccess = () => {
           <div className="mx-auto mb-4 w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center">
             <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
           </div>
-          <CardTitle className="text-2xl">Pagamento Completato!</CardTitle>
+          <CardTitle className="text-2xl">{t('subscriptionSuccess')}</CardTitle>
           <CardDescription>
-            Il tuo abbonamento è stato attivato con successo
+            {t('subscriptionSuccessDesc')}
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <p className="text-sm text-muted-foreground text-center">
-            Grazie per esserti abbonato. Potrai accedere a tutte le funzionalità premium del tuo piano.
+            {t('language') === 'Lingua' 
+              ? 'Grazie per esserti abbonato. Potrai accedere a tutte le funzionalità premium del tuo piano.'
+              : 'Thank you for subscribing. You will be able to access all premium features of your plan.'}
           </p>
           {sessionId && (
             <p className="text-xs text-muted-foreground text-center">
-              ID Sessione: {sessionId}
+              {t('language') === 'Lingua' ? 'ID Sessione' : 'Session ID'}: {sessionId}
             </p>
           )}
           <div className="text-center text-sm text-muted-foreground">
-            Reindirizzamento alla pagina abbonamenti tra {countdown} secondi...
+            {t('redirecting')} {countdown} {t('seconds')}...
           </div>
           <Button 
             className="w-full" 
             onClick={() => navigate("/subscription")}
           >
-            Vai alla pagina abbonamenti
+            {t('viewSubscription')}
           </Button>
         </CardContent>
       </Card>
