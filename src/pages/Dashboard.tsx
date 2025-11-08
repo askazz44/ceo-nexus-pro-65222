@@ -6,13 +6,17 @@ import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, eachWeekOfInterval, eachMonthOfInterval, parseISO } from "date-fns";
-import { it } from "date-fns/locale";
+import { enUS, it as itLocale } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { useTranslation } from "@/lib/i18n";
 
 export default function Dashboard() {
   const navigate = useNavigate();
+  const { t, language } = useTranslation();
+  const numberLocale = language === 'it' ? 'it-IT' : 'en-US';
+  const dLocale = language === 'it' ? itLocale : enUS;
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({
     totalProjects: 0,
@@ -140,12 +144,12 @@ export default function Dashboard() {
       });
     }
 
-    return intervals.map(date => {
-      const dateStr = format(date, "yyyy-MM-dd");
-      let income = 0;
-      let expense = 0;
+      return intervals.map(date => {
+        const dateStr = format(date, "yyyy-MM-dd");
+        let income = 0;
+        let expense = 0;
 
-      filteredProjects.forEach(project => {
+        filteredProjects.forEach(project => {
         project.transactions?.forEach((t: any) => {
           try {
             if (!t.transaction_date) return;
@@ -256,18 +260,18 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-              Dashboard Globale
+              {t('globalDashboard')}
             </h1>
-            <p className="text-muted-foreground mt-2">Panoramica di tutti i tuoi progetti</p>
+            <p className="text-muted-foreground mt-2">{t('overviewProjects')}</p>
           </div>
           <div className="flex flex-col sm:flex-row gap-3">
             <Select value={selectedProject} onValueChange={setSelectedProject}>
               <SelectTrigger className="w-[200px] border-primary/20 bg-card/50 backdrop-blur-sm">
                 <Filter className="h-4 w-4 mr-2" />
-                <SelectValue placeholder="Filtra progetto" />
+                <SelectValue placeholder={t('filterProject')} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Tutti i progetti</SelectItem>
+                <SelectItem value="all">{t('allProjects')}</SelectItem>
                 {allProjects.map(p => (
                   <SelectItem key={p.id} value={p.id}>{p.name}</SelectItem>
                 ))}
@@ -279,9 +283,9 @@ export default function Dashboard() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="week">Ultima settimana</SelectItem>
-                <SelectItem value="month">Ultimo mese</SelectItem>
-                <SelectItem value="year">Quest'anno</SelectItem>
+                <SelectItem value="week">{t('lastWeek')}</SelectItem>
+                <SelectItem value="month">{t('lastMonth')}</SelectItem>
+                <SelectItem value="year">{t('thisYear')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -291,14 +295,14 @@ export default function Dashboard() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="card-hover border-l-4 border-l-primary/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Progetti Attivi</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('activeProjects')}</CardTitle>
             <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
               <FolderKanban className="h-5 w-5 text-primary" />
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{filteredStats.totalProjects}</div>
-            <p className="text-xs text-muted-foreground mt-1">progetti in gestione</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('projectsInManagement')}</p>
           </CardContent>
         </Card>
 
@@ -311,13 +315,13 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-income">
-              {new Intl.NumberFormat('it-IT', {
+              {new Intl.NumberFormat(numberLocale, {
                 style: 'currency',
                 currency: filteredStats.currency,
               }).format(filteredStats.totalIncome)}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <p className="text-xs text-muted-foreground">ricavi totali</p>
+              <p className="text-xs text-muted-foreground">{t('totalRevenueLower')}</p>
               {incomeGrowth !== 0 && (
                 <Badge variant={incomeGrowth > 0 ? "default" : "destructive"} className="text-xs">
                   {incomeGrowth > 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
@@ -337,13 +341,13 @@ export default function Dashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold text-expense">
-              {new Intl.NumberFormat('it-IT', {
+              {new Intl.NumberFormat(numberLocale, {
                 style: 'currency',
                 currency: filteredStats.currency,
               }).format(filteredStats.totalExpense)}
             </div>
             <div className="flex items-center gap-2 mt-1">
-              <p className="text-xs text-muted-foreground">costi totali</p>
+              <p className="text-xs text-muted-foreground">{t('totalCosts')}</p>
               {expenseGrowth !== 0 && (
                 <Badge variant={expenseGrowth < 0 ? "default" : "destructive"} className="text-xs">
                   {expenseGrowth > 0 ? <ArrowUp className="h-3 w-3 mr-1" /> : <ArrowDown className="h-3 w-3 mr-1" />}
@@ -356,19 +360,19 @@ export default function Dashboard() {
 
         <Card className={`card-hover border-l-4 ${filteredStats.netProfit >= 0 ? 'border-l-income/50 bg-gradient-to-br from-card to-income-light/20' : 'border-l-expense/50 bg-gradient-to-br from-card to-expense-light/20'}`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Profitto Netto</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('netProfit')}</CardTitle>
             <div className={`h-10 w-10 rounded-full flex items-center justify-center ${filteredStats.netProfit >= 0 ? 'bg-income/10' : 'bg-expense/10'}`}>
               <Wallet className={`h-5 w-5 ${filteredStats.netProfit >= 0 ? 'text-income' : 'text-expense'}`} />
             </div>
           </CardHeader>
           <CardContent>
             <div className={`text-3xl font-bold ${filteredStats.netProfit >= 0 ? 'text-income' : 'text-expense'}`}>
-              {new Intl.NumberFormat('it-IT', {
+              {new Intl.NumberFormat(numberLocale, {
                 style: 'currency',
                 currency: filteredStats.currency,
               }).format(filteredStats.netProfit)}
             </div>
-            <p className="text-xs text-muted-foreground mt-1">risultato netto</p>
+            <p className="text-xs text-muted-foreground mt-1">{t('netResult')}</p>
           </CardContent>
         </Card>
       </div>
@@ -376,8 +380,8 @@ export default function Dashboard() {
       <div className="grid gap-6 md:grid-cols-2">
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="text-2xl">Andamento Temporale</CardTitle>
-            <CardDescription>Entrate e uscite nel periodo selezionato</CardDescription>
+            <CardTitle className="text-2xl">{t('temporalTrend')}</CardTitle>
+            <CardDescription>{t('incomeExpensePeriod')}</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -391,12 +395,12 @@ export default function Dashboard() {
                     border: '1px solid hsl(var(--border))',
                     borderRadius: '8px'
                   }}
-                  formatter={(value: any) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: filteredStats.currency }).format(value)}
+                  formatter={(value: any) => new Intl.NumberFormat(numberLocale, { style: 'currency', currency: filteredStats.currency }).format(value)}
                 />
                 <Legend />
-                <Line type="monotone" dataKey="income" stroke="hsl(var(--income))" strokeWidth={2} name="Entrate" />
-                <Line type="monotone" dataKey="expense" stroke="hsl(var(--expense))" strokeWidth={2} name="Uscite" />
-                <Line type="monotone" dataKey="profit" stroke="hsl(var(--primary))" strokeWidth={2} name="Profitto" />
+                <Line type="monotone" dataKey="income" stroke="hsl(var(--income))" strokeWidth={2} name={t('incomeLabel')} />
+                <Line type="monotone" dataKey="expense" stroke="hsl(var(--expense))" strokeWidth={2} name={t('expenseLabel')} />
+                <Line type="monotone" dataKey="profit" stroke="hsl(var(--primary))" strokeWidth={2} name={t('profitLabel')} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -404,9 +408,9 @@ export default function Dashboard() {
 
         {categoryData.length > 0 && (
           <Card className="shadow-md">
-            <CardHeader>
-              <CardTitle className="text-2xl">Distribuzione Spese</CardTitle>
-              <CardDescription>Spese suddivise per categoria</CardDescription>
+          <CardHeader>
+            <CardTitle className="text-2xl">{t('expenseDistribution')}</CardTitle>
+            <CardDescription>{t('expensesByCategory')}</CardDescription>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>

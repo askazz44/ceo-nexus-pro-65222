@@ -7,9 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { STRIPE_CONFIG } from "@/config/stripe";
+import { useTranslation } from "@/lib/i18n";
 
 const Subscription = () => {
   const { toast } = useToast();
+  const { t, language } = useTranslation();
   const [loading, setLoading] = useState<string | null>(null);
   const [currentTier, setCurrentTier] = useState<string>("free");
   const [subscriptionEnd, setSubscriptionEnd] = useState<string | null>(null);
@@ -50,8 +52,8 @@ const Subscription = () => {
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData?.session) {
         toast({
-          title: "Errore",
-          description: "Devi effettuare il login per abbonarti",
+          title: t('error'),
+          description: t('loginRequired'),
           variant: "destructive",
         });
         return;
@@ -69,15 +71,15 @@ const Subscription = () => {
       if (data?.url) {
         window.open(data.url, "_blank");
         toast({
-          title: "Reindirizzamento a Stripe",
-          description: "Aperta nuova finestra per il checkout",
+          title: t('redirectingStripe'),
+          description: t('checkoutWindowOpened'),
         });
       }
     } catch (error) {
       console.error("Error creating checkout:", error);
       toast({
-        title: "Errore",
-        description: "Impossibile avviare il checkout",
+        title: t('error'),
+        description: t('unableToCheckout'),
         variant: "destructive",
       });
     } finally {
@@ -104,8 +106,8 @@ const Subscription = () => {
     } catch (error) {
       console.error("Error opening customer portal:", error);
       toast({
-        title: "Errore",
-        description: "Impossibile aprire il portale di gestione",
+        title: t('error'),
+        description: t('unableToOpenPortal'),
         variant: "destructive",
       });
     }
@@ -116,9 +118,9 @@ const Subscription = () => {
       name: "Free",
       monthlyPrice: STRIPE_CONFIG.pricing.free.monthly,
       yearlyPrice: STRIPE_CONFIG.pricing.free.yearly,
-      period: "/sempre",
-      description: STRIPE_CONFIG.descriptions.free,
-      features: STRIPE_CONFIG.features.free,
+      period: t('forever'),
+      description: STRIPE_CONFIG.descriptions[language as 'it' | 'en'].free,
+      features: STRIPE_CONFIG.features[language as 'it' | 'en'].free,
       priceId: null,
       tier: "free",
       icon: Zap,
@@ -127,9 +129,9 @@ const Subscription = () => {
       name: "Pro",
       monthlyPrice: STRIPE_CONFIG.pricing.pro.monthly,
       yearlyPrice: STRIPE_CONFIG.pricing.pro.yearly,
-      period: billingPeriod === "monthly" ? "/mese" : "/anno",
-      description: STRIPE_CONFIG.descriptions.pro,
-      features: STRIPE_CONFIG.features.pro,
+      period: billingPeriod === "monthly" ? t('perMonth') : t('perYear'),
+      description: STRIPE_CONFIG.descriptions[language as 'it' | 'en'].pro,
+      features: STRIPE_CONFIG.features[language as 'it' | 'en'].pro,
       priceId: billingPeriod === "monthly" ? STRIPE_CONFIG.priceIds.pro_monthly : STRIPE_CONFIG.priceIds.pro_yearly,
       tier: "pro",
       icon: Zap,
@@ -139,9 +141,9 @@ const Subscription = () => {
       name: "Business",
       monthlyPrice: STRIPE_CONFIG.pricing.business.monthly,
       yearlyPrice: STRIPE_CONFIG.pricing.business.yearly,
-      period: billingPeriod === "monthly" ? "/mese" : "/anno",
-      description: STRIPE_CONFIG.descriptions.business,
-      features: STRIPE_CONFIG.features.business,
+      period: billingPeriod === "monthly" ? t('perMonth') : t('perYear'),
+      description: STRIPE_CONFIG.descriptions[language as 'it' | 'en'].business,
+      features: STRIPE_CONFIG.features[language as 'it' | 'en'].business,
       priceId: billingPeriod === "monthly" ? STRIPE_CONFIG.priceIds.business_monthly : STRIPE_CONFIG.priceIds.business_yearly,
       tier: "business",
       icon: Crown,
@@ -150,9 +152,9 @@ const Subscription = () => {
       name: "Lifetime",
       monthlyPrice: STRIPE_CONFIG.pricing.lifetime.monthly,
       yearlyPrice: STRIPE_CONFIG.pricing.lifetime.yearly,
-      period: "/una tantum",
-      description: STRIPE_CONFIG.descriptions.lifetime,
-      features: STRIPE_CONFIG.features.lifetime,
+      period: t('oneTime'),
+      description: STRIPE_CONFIG.descriptions[language as 'it' | 'en'].lifetime,
+      features: STRIPE_CONFIG.features[language as 'it' | 'en'].lifetime,
       priceId: STRIPE_CONFIG.priceIds.lifetime,
       tier: "lifetime",
       icon: Crown,
@@ -164,7 +166,7 @@ const Subscription = () => {
     return (
       <div className="container mx-auto py-12">
         <div className="text-center">
-          <p className="text-muted-foreground">Caricamento...</p>
+          <p className="text-muted-foreground">{t('loading')}</p>
         </div>
       </div>
     );
@@ -173,32 +175,32 @@ const Subscription = () => {
   return (
     <div className="container mx-auto py-12 px-4">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-4">Scegli il tuo piano</h1>
+        <h1 className="text-4xl font-bold mb-4">{t('choosePlan')}</h1>
         <p className="text-xl text-muted-foreground">
-          Gestisci i tuoi progetti con gli strumenti più adatti alle tue esigenze
+          {t('manageProjectsTagline')}
         </p>
         
         <div className="flex justify-center mt-8">
           <Tabs value={billingPeriod} onValueChange={(value) => setBillingPeriod(value as "monthly" | "yearly")}>
             <TabsList>
-              <TabsTrigger value="monthly">Mensile</TabsTrigger>
-              <TabsTrigger value="yearly">Annuale</TabsTrigger>
+              <TabsTrigger value="monthly">{t('monthly')}</TabsTrigger>
+              <TabsTrigger value="yearly">{t('yearly')}</TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
-        {currentTier !== "free" && (
+      {currentTier !== "free" && (
           <div className="mt-6 flex flex-col items-center gap-2">
             <Badge variant="secondary" className="text-lg px-4 py-2">
-              Piano attuale: {currentTier.toUpperCase()}
+              {t('currentPlan')}: {currentTier.toUpperCase()}
             </Badge>
             {subscriptionEnd && (
               <p className="text-sm text-muted-foreground">
-                Valido fino al {new Date(subscriptionEnd).toLocaleDateString()}
+                {t('validUntil')} {new Date(subscriptionEnd).toLocaleDateString()}
               </p>
             )}
             {currentTier !== "lifetime" && currentTier !== "free" && (
               <Button variant="outline" onClick={handleManageSubscription} className="mt-2">
-                Gestisci abbonamento
+                {t('manageSubscription')}
               </Button>
             )}
           </div>
@@ -221,16 +223,16 @@ const Subscription = () => {
                   : ""
               } ${isCurrentPlan ? "ring-2 ring-primary" : ""}`}
             >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge>Più popolare</Badge>
-                </div>
-              )}
-              {isCurrentPlan && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge variant="secondary">Piano attuale</Badge>
-                </div>
-              )}
+        {plan.popular && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            <Badge>{t('mostPopular')}</Badge>
+          </div>
+        )}
+        {isCurrentPlan && (
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+            <Badge variant="secondary">{t('currentPlan')}</Badge>
+          </div>
+        )}
               <CardHeader>
                 <div className="flex items-center justify-between mb-2">
                   <Icon className="h-8 w-8 text-primary" />
@@ -260,15 +262,15 @@ const Subscription = () => {
                     onClick={() => handleCheckout(plan.priceId!, plan.name)}
                     disabled={loading === plan.priceId}
                   >
-                    {loading === plan.priceId ? "Caricamento..." : "Scegli piano"}
+                    {loading === plan.priceId ? t('loading') : t('choosePlanButton')}
                   </Button>
                 ) : isCurrentPlan ? (
                   <Button className="w-full" variant="secondary" disabled>
-                    Piano attivo
+                    {t('activePlan')}
                   </Button>
                 ) : (
                   <Button className="w-full" variant="outline" disabled>
-                    Piano attuale
+                    {t('currentPlanButton')}
                   </Button>
                 )}
               </CardContent>

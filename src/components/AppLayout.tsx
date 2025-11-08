@@ -13,12 +13,14 @@ import {
   Settings
 } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useTranslation } from '@/lib/i18n';
 
 export default function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     checkAdmin();
@@ -44,14 +46,14 @@ export default function AppLayout() {
   };
 
   const navItems = [
-    { path: "/", label: "Dashboard", icon: LayoutDashboard },
-    { path: "/projects", label: "Progetti", icon: FolderKanban },
-    { path: "/subscription", label: "Abbonamento", icon: CreditCard },
-    { path: "/settings", label: "Impostazioni", icon: Settings },
+    { path: "/", label: t('dashboard'), icon: LayoutDashboard },
+    { path: "/projects", label: t('projects'), icon: FolderKanban },
+    { path: "/subscription", label: t('subscription'), icon: CreditCard },
+    { path: "/settings", label: t('settings'), icon: Settings },
   ];
 
   if (isAdmin) {
-    navItems.push({ path: "/admin", label: "Admin", icon: Shield });
+    navItems.push({ path: "/admin", label: t('admin'), icon: Shield });
   }
 
   return (
@@ -88,7 +90,7 @@ export default function AppLayout() {
             </nav>
           </div>
 
-          <div className="flex items-center gap-2">
+  <div className="flex items-center gap-2">
             <ThemeToggle />
             <Button 
               variant="ghost" 
@@ -97,7 +99,7 @@ export default function AppLayout() {
               className="gap-2 hidden sm:flex"
             >
               <LogOut className="h-4 w-4" />
-              Esci
+              {t('logout')}
             </Button>
             
             {/* Mobile Menu Button */}
@@ -141,7 +143,7 @@ export default function AppLayout() {
                 className="w-full justify-start gap-2"
               >
                 <LogOut className="h-4 w-4" />
-                Esci
+                {t('logout')}
               </Button>
             </nav>
           </div>
