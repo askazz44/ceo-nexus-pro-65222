@@ -15,7 +15,7 @@ export default defineConfig(({ mode }) => ({
     mode === "development" && componentTagger(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.ico', 'robots.txt', 'pwa-icon-192.png', 'pwa-icon-512.png'],
+      includeAssets: ['favicon.ico', 'robots.txt', 'pwa-icon-192-v2.png', 'pwa-icon-512-v2.png'],
       manifest: {
         id: '/gainflow',
         name: 'GainFlow - Gestione Progetti',
@@ -29,13 +29,13 @@ export default defineConfig(({ mode }) => ({
         start_url: '/',
         icons: [
           {
-            src: 'pwa-icon-192.png',
+            src: 'pwa-icon-192-v2.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any maskable'
           },
           {
-            src: 'pwa-icon-512.png',
+            src: 'pwa-icon-512-v2.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any maskable'
