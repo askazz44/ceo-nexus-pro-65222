@@ -16,8 +16,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { projectSchema, type ProjectFormData } from "@/lib/schemas/projectSchema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useTranslation } from "@/lib/i18n";
 
 export default function Projects() {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [projects, setProjects] = useState<any[]>([]);
@@ -53,8 +55,8 @@ export default function Projects() {
 
     if (error) {
       toast({
-        title: "Errore",
-        description: "Impossibile caricare i progetti",
+        title: t('error'),
+        description: t('unableToLoadProjects'),
         variant: "destructive",
       });
     } else {
@@ -108,14 +110,14 @@ export default function Projects() {
 
     if (error) {
       toast({
-        title: "Errore",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Progetto creato",
-        description: "Il progetto è stato creato con successo",
+        title: t('projectCreated'),
+        description: t('projectCreatedSuccess'),
       });
       setOpen(false);
       form.reset();
@@ -134,14 +136,14 @@ export default function Projects() {
 
     if (error) {
       toast({
-        title: "Errore",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Progetto eliminato",
-        description: "Il progetto è stato rimosso con successo",
+        title: t('projectDeleted'),
+        description: t('projectDeletedSuccess'),
       });
       loadProjects();
       checkCanCreate();
@@ -191,22 +193,22 @@ export default function Projects() {
         <div className="relative">
           <div className="absolute -top-10 left-0 w-48 h-48 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl"></div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-            I Miei Progetti
+            {t('myProjects')}
           </h1>
-          <p className="text-muted-foreground mt-2">Gestisci le tue aziende e progetti</p>
+          <p className="text-muted-foreground mt-2">{t('manageCompanies')}</p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>
             <Button disabled={!canCreate} className="btn-glow shadow-md">
               <Plus className="mr-2 h-4 w-4" />
-              Nuovo Progetto
+              {t('createProject')}
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
-              <DialogTitle>Crea Nuovo Progetto</DialogTitle>
+              <DialogTitle>{t('createNewProject')}</DialogTitle>
               <DialogDescription>
-                Inserisci i dettagli del tuo progetto aziendale
+                {t('projectDetails')}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -216,7 +218,7 @@ export default function Projects() {
                   name="name"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Nome Progetto *</FormLabel>
+                      <FormLabel>{t('projectName')} *</FormLabel>
                       <FormControl>
                         <Input {...field} />
                       </FormControl>
@@ -229,7 +231,7 @@ export default function Projects() {
                   name="industry"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Settore</FormLabel>
+                      <FormLabel>{t('industry')}</FormLabel>
                       <FormControl>
                         <Input {...field} placeholder="es. Tech, Retail, Consulting" />
                       </FormControl>
@@ -242,7 +244,7 @@ export default function Projects() {
                   name="description"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Descrizione</FormLabel>
+                      <FormLabel>{t('description')}</FormLabel>
                       <FormControl>
                         <Textarea {...field} placeholder="Obiettivi e note sul progetto" />
                       </FormControl>
@@ -256,7 +258,7 @@ export default function Projects() {
                     name="target_revenue"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Target Revenue</FormLabel>
+                        <FormLabel>{t('targetRevenue')}</FormLabel>
                         <FormControl>
                           <Input 
                             type="number" 
@@ -275,7 +277,7 @@ export default function Projects() {
                     name="currency"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Valuta</FormLabel>
+                        <FormLabel>{t('currency')}</FormLabel>
                         <Select onValueChange={field.onChange} value={field.value}>
                           <FormControl>
                             <SelectTrigger>
@@ -298,7 +300,7 @@ export default function Projects() {
                   name="start_date"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data Inizio</FormLabel>
+                      <FormLabel>{t('startDate')}</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
@@ -308,7 +310,7 @@ export default function Projects() {
                 />
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Crea Progetto
+                  {t('createProject')}
                 </Button>
               </form>
             </Form>
@@ -320,16 +322,14 @@ export default function Projects() {
         <Card className="border-warning bg-warning/5">
           <CardContent className="pt-6 space-y-3">
             <p className="text-sm font-medium">
-              Limite raggiunto: {projectLimit.current}/{projectLimit.max} progetti
+              {t('limitReached').replace('{current}', projectLimit.current.toString()).replace('{max}', projectLimit.max.toString())}
             </p>
             <p className="text-sm text-muted-foreground">
-              {projectLimit.tier === 'free' && 
-                'Passa a Pro per gestire fino a 10 progetti'}
-              {projectLimit.tier === 'pro' && 
-                'Passa a Business per progetti illimitati'}
+              {projectLimit.tier === 'free' && t('upgradeToProMessage')}
+              {projectLimit.tier === 'pro' && t('upgradeToBusinessMessage')}
             </p>
             <Button onClick={() => navigate('/subscription')} size="sm">
-              Vedi Piani
+              {t('seePlans')}
             </Button>
           </CardContent>
         </Card>
@@ -339,13 +339,13 @@ export default function Projects() {
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-16">
             <Building2 className="h-12 w-12 text-muted-foreground mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Nessun progetto</h3>
+            <h3 className="text-lg font-semibold mb-2">{t('noProjectsYet')}</h3>
             <p className="text-muted-foreground text-center mb-4">
-              Inizia creando il tuo primo progetto aziendale
+              {t('startCreating')}
             </p>
             <Button onClick={() => setOpen(true)} disabled={!canCreate}>
               <Plus className="mr-2 h-4 w-4" />
-              Crea Primo Progetto
+              {t('createFirstProject')}
             </Button>
           </CardContent>
         </Card>
@@ -409,14 +409,14 @@ export default function Projects() {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Conferma Eliminazione</AlertDialogTitle>
+            <AlertDialogTitle>{t('confirmDeletion')}</AlertDialogTitle>
             <AlertDialogDescription>
-              Sei sicuro di voler eliminare questo progetto? Tutte le transazioni associate verranno eliminate. Questa azione non può essere annullata.
+              {t('deleteProjectWarning')}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annulla</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>Elimina</AlertDialogAction>
+            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete}>{t('delete')}</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

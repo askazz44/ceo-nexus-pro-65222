@@ -435,7 +435,7 @@ export default function Dashboard() {
                       border: '1px solid hsl(var(--border))',
                       borderRadius: '8px'
                     }}
-                    formatter={(value: any) => new Intl.NumberFormat('it-IT', { style: 'currency', currency: filteredStats.currency }).format(value)}
+                    formatter={(value: any) => new Intl.NumberFormat(numberLocale, { style: 'currency', currency: filteredStats.currency }).format(value)}
                   />
                 </PieChart>
               </ResponsiveContainer>
@@ -447,8 +447,8 @@ export default function Dashboard() {
       {projectsWithProgress.length > 0 && (
         <Card className="shadow-md">
           <CardHeader>
-            <CardTitle className="text-2xl">Progressi verso gli Obiettivi</CardTitle>
-            <CardDescription>Stato di avanzamento dei progetti con target revenue</CardDescription>
+            <CardTitle className="text-2xl">{t('goalProgress')}</CardTitle>
+            <CardDescription>{t('projectsTargetStatus')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             {projectsWithProgress.map((project) => (
@@ -457,7 +457,7 @@ export default function Dashboard() {
                   <div className="flex-1">
                     <h4 className="font-semibold">{project.name}</h4>
                     <p className="text-sm text-muted-foreground">
-                      {new Intl.NumberFormat('it-IT', { style: 'currency', currency: project.currency }).format(project.projectIncome)} di {new Intl.NumberFormat('it-IT', { style: 'currency', currency: project.currency }).format(project.target)}
+                      {new Intl.NumberFormat(numberLocale, { style: 'currency', currency: project.currency }).format(project.projectIncome)} di {new Intl.NumberFormat(numberLocale, { style: 'currency', currency: project.currency }).format(project.target)}
                     </p>
                   </div>
                   <span className={`text-lg font-bold ${project.progress >= 100 ? 'text-income' : 'text-primary'}`}>
@@ -473,8 +473,8 @@ export default function Dashboard() {
 
       <Card className="shadow-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Progetti Recenti</CardTitle>
-          <CardDescription>I tuoi ultimi progetti creati</CardDescription>
+          <CardTitle className="text-2xl">{t('recentProjects')}</CardTitle>
+          <CardDescription>{t('yourLatestProjects')}</CardDescription>
         </CardHeader>
         <CardContent>
           {filteredProjects.length === 0 ? (
@@ -482,7 +482,7 @@ export default function Dashboard() {
               <div className="mx-auto h-16 w-16 rounded-full bg-muted flex items-center justify-center mb-4">
                 <FolderKanban className="h-8 w-8 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground">Nessun progetto trovato</p>
+              <p className="text-muted-foreground">{t('noProjectsFound')}</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -510,13 +510,13 @@ export default function Dashboard() {
                     </div>
                     <div className="relative text-right">
                       <p className={`font-bold text-xl ${projectProfit >= 0 ? 'text-income' : 'text-expense'}`}>
-                        {new Intl.NumberFormat('it-IT', {
+                        {new Intl.NumberFormat(numberLocale, {
                           style: 'currency',
                           currency: project.currency,
                         }).format(projectProfit)}
                       </p>
                       <p className="text-sm text-muted-foreground mt-1">
-                        {project.transactions?.length || 0} transazioni
+                        {project.transactions?.length || 0} {t('transactions')}
                       </p>
                     </div>
                   </div>
