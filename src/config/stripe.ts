@@ -1,4 +1,4 @@
-// Centralizza tutti gli ID Stripe
+// Centralize all Stripe IDs and language-aware copy
 export const STRIPE_CONFIG = {
   priceIds: {
     pro_monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || "price_1SDMO8Qq3sG1dhTUwHusboCN",
@@ -8,10 +8,18 @@ export const STRIPE_CONFIG = {
     lifetime: import.meta.env.VITE_STRIPE_PRICE_LIFETIME || "price_1SDPUIQq3sG1dhTUZlnFF8fH",
   },
   features: {
-    free: ["2 progetti", "30 giorni di cronologia", "Analisi base", "Export CSV"],
-    pro: ["10 progetti", "ZERO ADS", "Cronologia illimitata", "Export avanzati", "Previsioni AI"],
-    business: ["Progetti illimitati", "Team access", "API", "White-label", "Supporto prioritario"],
-    lifetime: ["Tutte le funzionalità Pro", "Accesso a vita", "Nessun costo mensile", "Aggiornamenti inclusi", "Supporto premium"],
+    it: {
+      free: ["2 progetti", "30 giorni di cronologia", "Analisi base", "Export CSV"],
+      pro: ["10 progetti", "ZERO ADS", "Cronologia illimitata", "Export avanzati", "Previsioni AI"],
+      business: ["Progetti illimitati", "Team access", "API", "White-label", "Supporto prioritario"],
+      lifetime: ["Tutte le funzionalità Pro", "Accesso a vita", "Nessun costo mensile", "Aggiornamenti inclusi", "Supporto premium"],
+    },
+    en: {
+      free: ["2 projects", "30 days history", "Basic analytics", "CSV export"],
+      pro: ["10 projects", "ZERO ADS", "Unlimited history", "Advanced exports", "AI forecasts"],
+      business: ["Unlimited projects", "Team access", "API", "White-label", "Priority support"],
+      lifetime: ["All Pro features", "Lifetime access", "No monthly cost", "Updates included", "Premium support"],
+    },
   },
   pricing: {
     free: { monthly: "€0", yearly: "€0" },
@@ -20,11 +28,19 @@ export const STRIPE_CONFIG = {
     lifetime: { monthly: "€249", yearly: "€249" },
   },
   descriptions: {
-    free: "Per iniziare",
-    pro: "Per professionisti",
-    business: "Per aziende",
-    lifetime: "Pro tier forever",
-  }
+    it: {
+      free: "Per iniziare",
+      pro: "Per professionisti",
+      business: "Per aziende",
+      lifetime: "Pro tier per sempre",
+    },
+    en: {
+      free: "For getting started",
+      pro: "For professionals",
+      business: "For businesses",
+      lifetime: "Pro tier forever",
+    },
+  },
 } as const;
 
-export type SubscriptionTier = keyof typeof STRIPE_CONFIG.features;
+export type SubscriptionTier = keyof typeof STRIPE_CONFIG.features.it;

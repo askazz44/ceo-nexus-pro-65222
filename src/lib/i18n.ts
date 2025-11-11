@@ -16,6 +16,7 @@ export const translations = {
     signOutMessage: 'A presto!',
     signIn: 'Accedi',
     signUp: 'Registrati',
+    logout: 'Esci',
     email: 'Email',
     password: 'Password',
     fullName: 'Nome Completo',
@@ -226,6 +227,9 @@ export const translations = {
     save: 'Salva',
     close: 'Chiudi',
     confirm: 'Conferma',
+    retry: 'Riprova',
+    somethingWentWrong: 'Qualcosa è andato storto',
+    unexpectedError: 'Si è verificato un errore imprevisto',
   },
   en: {
     // Navigation
@@ -240,6 +244,7 @@ export const translations = {
     signOutMessage: 'See you soon!',
     signIn: 'Sign In',
     signUp: 'Sign Up',
+    logout: 'Log out',
     email: 'Email',
     password: 'Password',
     fullName: 'Full Name',
@@ -450,6 +455,9 @@ export const translations = {
     save: 'Save',
     close: 'Close',
     confirm: 'Confirm',
+    retry: 'Retry',
+    somethingWentWrong: 'Something went wrong',
+    unexpectedError: 'An unexpected error occurred',
   },
 };
 
