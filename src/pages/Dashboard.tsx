@@ -165,7 +165,7 @@ export default function Dashboard() {
       });
 
       return {
-        date: timeRange === "year" ? format(date, "MMM", { locale: it }) : format(date, "dd MMM", { locale: it }),
+        date: timeRange === "year" ? format(date, "MMM", { locale: dLocale }) : format(date, "dd MMM", { locale: dLocale }),
         income,
         expense,
         profit: income - expense
@@ -308,7 +308,7 @@ export default function Dashboard() {
 
         <Card className="card-hover border-l-4 border-l-income/50 bg-gradient-to-br from-card to-income-light/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Totale Entrate</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalRevenue')}</CardTitle>
             <div className="h-10 w-10 rounded-full bg-income/10 flex items-center justify-center">
               <TrendingUp className="h-5 w-5 text-income" />
             </div>
@@ -334,7 +334,7 @@ export default function Dashboard() {
 
         <Card className="card-hover border-l-4 border-l-expense/50 bg-gradient-to-br from-card to-expense-light/20">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Totale Uscite</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalExpenses')}</CardTitle>
             <div className="h-10 w-10 rounded-full bg-expense/10 flex items-center justify-center">
               <TrendingDown className="h-5 w-5 text-expense" />
             </div>
