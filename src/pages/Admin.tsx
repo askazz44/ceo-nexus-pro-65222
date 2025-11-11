@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Users, Shield, Download } from "lucide-react";
@@ -10,10 +11,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Admin() {
   const { toast } = useToast();
+  const { t, language } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [users, setUsers] = useState<any[]>([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [exporting, setExporting] = useState(false);
+  
+  const dateLocale = language === 'it' ? 'it-IT' : 'en-US';
 
   useEffect(() => {
     checkAdmin();
@@ -35,8 +39,8 @@ export default function Admin() {
       loadUsers();
     } else {
       toast({
-        title: "Accesso negato",
-        description: "Non hai i permessi per accedere a questa pagina",
+        title: t('accessDenied'),
+        description: t('noPermission'),
         variant: "destructive",
       });
       setLoading(false);
@@ -61,14 +65,14 @@ export default function Admin() {
       downloadDatabaseExport(data);
       
       toast({
-        title: "Backup completato",
-        description: "Il database è stato esportato con successo",
+        title: t('backupCompleted'),
+        description: t('databaseExported'),
       });
     } catch (error) {
       console.error("Export error:", error);
       toast({
-        title: "Errore durante l'export",
-        description: "Impossibile esportare il database",
+        title: t('exportError'),
+        description: t('cannotExport'),
         variant: "destructive",
       });
     } finally {
@@ -122,7 +126,7 @@ export default function Admin() {
       <Card>
         <CardContent className="pt-6">
           <p className="text-center text-muted-foreground">
-            Non hai i permessi per visualizzare questa pagina
+            {t('noPermissionView')}
           </p>
         </CardContent>
       </Card>
@@ -131,33 +135,33 @@ export default function Admin() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Shield className="h-6 w-6 text-primary" />
-          <div>
-            <h1 className="text-3xl font-bold">Pannello Admin</h1>
-            <p className="text-muted-foreground">Gestione utenti e sottoscrizioni</p>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Shield className="h-6 w-6 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold">{t('adminPanel')}</h1>
+              <p className="text-muted-foreground">{t('userManagement')}</p>
+            </div>
           </div>
+          <Button onClick={handleExportDatabase} disabled={exporting} variant="outline">
+            {exporting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {t('exporting')}
+              </>
+            ) : (
+              <>
+                <Download className="mr-2 h-4 w-4" />
+                {t('backupDatabase')}
+              </>
+            )}
+          </Button>
         </div>
-        <Button onClick={handleExportDatabase} disabled={exporting} variant="outline">
-          {exporting ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Esportazione...
-            </>
-          ) : (
-            <>
-              <Download className="mr-2 h-4 w-4" />
-              Backup Database
-            </>
-          )}
-        </Button>
-      </div>
 
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Utenti Totali</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalUsers')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -167,7 +171,7 @@ export default function Admin() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Piano Free</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('freePlan')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -178,7 +182,7 @@ export default function Admin() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Abbonamenti Attivi</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('activeSubscriptions')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
@@ -190,8 +194,8 @@ export default function Admin() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Utenti Registrati</CardTitle>
-          <CardDescription>Lista completa degli utenti della piattaforma</CardDescription>
+          <CardTitle>{t('registeredUsers')}</CardTitle>
+          <CardDescription>{t('platformUsers')}</CardDescription>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -210,7 +214,7 @@ export default function Admin() {
                   <p className="text-sm text-muted-foreground">{user.email}</p>
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  Registrato: {new Date(user.created_at).toLocaleDateString('it-IT')}
+                  {t('registered')} {new Date(user.created_at).toLocaleDateString(dateLocale)}
                 </div>
               </div>
             ))}

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Papa from "papaparse";
 import { Button } from "@/components/ui/button";
+import { useTranslation } from "@/lib/i18n";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Upload, Loader2, FileSpreadsheet } from "lucide-react";
@@ -23,6 +24,7 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [fileName, setFileName] = useState<string>("");
   const { toast } = useToast();
+  const { t } = useTranslation();
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -40,8 +42,8 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
           
           if (transactions.length === 0) {
             toast({
-              title: "Errore",
-              description: "Nessuna transazione valida trovata nel file",
+              title: t('error'),
+              description: t('noValidTransactions'),
               variant: "destructive",
             });
             setUploading(false);
@@ -66,8 +68,8 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
 
           if (validationErrors.length > 0) {
             toast({
-              title: "Errori di validazione",
-              description: `${validationErrors.length} transazioni non valide. Prima errore: ${validationErrors[0]}`,
+              title: t('validationErrors'),
+              description: `${validationErrors.length} ${t('invalidTransactions')} ${validationErrors[0]}`,
               variant: "destructive",
             });
             setUploading(false);
@@ -81,8 +83,8 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
           if (error) throw error;
 
           toast({
-            title: "Importazione completata",
-            description: `${transactions.length} transazioni importate con successo`,
+            title: t('importCompleted'),
+            description: `${transactions.length} ${t('transactionsImported')}`,
           });
           
           setOpen(false);
@@ -90,7 +92,7 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
           onUploadComplete();
         } catch (error: any) {
           toast({
-            title: "Errore durante l'importazione",
+            title: t('importError'),
             description: error.message,
             variant: "destructive",
           });
@@ -100,7 +102,7 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
       },
       error: (error) => {
         toast({
-          title: "Errore nel parsing del file",
+          title: t('csvParseError'),
           description: error.message,
           variant: "destructive",
         });
@@ -265,14 +267,14 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
       <DialogTrigger asChild>
         <Button variant="outline">
           <Upload className="mr-2 h-4 w-4" />
-          Importa CSV
+          {t('importCSV')}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Importa Transazioni da CSV</DialogTitle>
+          <DialogTitle>{t('importTransactionsCSV')}</DialogTitle>
           <DialogDescription>
-            Carica un file CSV o Excel con le transazioni bancarie. Il sistema cercherà automaticamente di riconoscere le colonne.
+            {t('uploadCSVDesc')}
           </DialogDescription>
         </DialogHeader>
         
@@ -280,23 +282,23 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
           <Card className="bg-muted/50">
             <CardContent className="pt-6">
               <div className="space-y-2 text-sm text-muted-foreground">
-                <p className="font-medium text-foreground">Formato consigliato:</p>
+                <p className="font-medium text-foreground">{t('recommendedFormat')}</p>
                 <ul className="list-disc list-inside space-y-1">
-                  <li>Data (formato: AAAA-MM-GG, GG/MM/AAAA o simili)</li>
-                  <li>Importo (numero positivo o negativo)</li>
-                  <li>Tipo (Entrata/Uscita o Income/Expense) - opzionale</li>
-                  <li>Categoria - opzionale</li>
-                  <li>Nota/Descrizione - opzionale</li>
+                  <li>{t('dateFormat')}</li>
+                  <li>{t('amountFormat')}</li>
+                  <li>{t('typeFormat')}</li>
+                  <li>{t('categoryFormat')}</li>
+                  <li>{t('noteFormat')}</li>
                 </ul>
                 <p className="mt-2 text-xs">
-                  Il sistema è flessibile e cercherà di interpretare automaticamente il formato del tuo file CSV.
+                  {t('flexibleFormat')}
                 </p>
               </div>
             </CardContent>
           </Card>
 
           <div className="grid w-full items-center gap-1.5">
-            <Label htmlFor="csv-file">File CSV/Excel</Label>
+            <Label htmlFor="csv-file">{t('csvFile')}</Label>
             <div className="flex items-center gap-2">
               <Input
                 id="csv-file"
@@ -318,7 +320,7 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
           {uploading && (
             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground p-4">
               <Loader2 className="h-4 w-4 animate-spin" />
-              Importazione in corso...
+              {t('importing')}
             </div>
           )}
         </div>

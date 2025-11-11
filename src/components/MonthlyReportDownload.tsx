@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useTranslation } from "@/lib/i18n";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { FileDown, Loader2 } from "lucide-react";
@@ -16,23 +17,24 @@ export function MonthlyReportDownload({ project, transactions }: MonthlyReportDo
   const [selectedMonth, setSelectedMonth] = useState<string>("");
   const [selectedYear, setSelectedYear] = useState<string>("");
   const [generating, setGenerating] = useState(false);
+  const { t } = useTranslation();
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 5 }, (_, i) => currentYear - i);
   
   const months = [
-    { value: "1", label: "Gennaio" },
-    { value: "2", label: "Febbraio" },
-    { value: "3", label: "Marzo" },
-    { value: "4", label: "Aprile" },
-    { value: "5", label: "Maggio" },
-    { value: "6", label: "Giugno" },
-    { value: "7", label: "Luglio" },
-    { value: "8", label: "Agosto" },
-    { value: "9", label: "Settembre" },
-    { value: "10", label: "Ottobre" },
-    { value: "11", label: "Novembre" },
-    { value: "12", label: "Dicembre" },
+    { value: "1", label: t('january') },
+    { value: "2", label: t('february') },
+    { value: "3", label: t('march') },
+    { value: "4", label: t('april') },
+    { value: "5", label: t('may') },
+    { value: "6", label: t('june') },
+    { value: "7", label: t('july') },
+    { value: "8", label: t('august') },
+    { value: "9", label: t('september') },
+    { value: "10", label: t('october') },
+    { value: "11", label: t('november') },
+    { value: "12", label: t('december') },
   ];
 
   const handleGenerate = async () => {
@@ -57,23 +59,23 @@ export function MonthlyReportDownload({ project, transactions }: MonthlyReportDo
       <DialogTrigger asChild>
         <Button variant="outline">
           <FileDown className="mr-2 h-4 w-4" />
-          Report PDF
+          {t('reportPDF')}
         </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Scarica Report Mensile</DialogTitle>
+          <DialogTitle>{t('downloadMonthlyReport')}</DialogTitle>
           <DialogDescription>
-            Seleziona il mese e l'anno per generare il report in PDF con tutte le entrate e uscite
+            {t('selectMonthYear')}
           </DialogDescription>
         </DialogHeader>
         
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="month">Mese</Label>
+            <Label htmlFor="month">{t('month')}</Label>
             <Select value={selectedMonth} onValueChange={setSelectedMonth}>
               <SelectTrigger id="month">
-                <SelectValue placeholder="Seleziona mese" />
+                <SelectValue placeholder={t('selectMonth')} />
               </SelectTrigger>
               <SelectContent>
                 {months.map((month) => (
@@ -86,10 +88,10 @@ export function MonthlyReportDownload({ project, transactions }: MonthlyReportDo
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="year">Anno</Label>
+            <Label htmlFor="year">{t('year')}</Label>
             <Select value={selectedYear} onValueChange={setSelectedYear}>
               <SelectTrigger id="year">
-                <SelectValue placeholder="Seleziona anno" />
+                <SelectValue placeholder={t('selectYear')} />
               </SelectTrigger>
               <SelectContent>
                 {years.map((year) => (
@@ -107,7 +109,7 @@ export function MonthlyReportDownload({ project, transactions }: MonthlyReportDo
             className="w-full"
           >
             {generating && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Genera e Scarica PDF
+            {t('generatePDF')}
           </Button>
         </div>
       </DialogContent>

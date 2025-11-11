@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -27,6 +28,9 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { t, language } = useTranslation();
+  
+  const numberLocale = language === 'it' ? 'it-IT' : 'en-US';
   const [project, setProject] = useState<any>(null);
   const [transactions, setTransactions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,8 +69,8 @@ export default function ProjectDetail() {
 
     if (error) {
       toast({
-        title: "Errore",
-        description: "Progetto non trovato",
+        title: t('error'),
+        description: t('projectNotFound'),
         variant: "destructive",
       });
       navigate("/projects");
@@ -110,14 +114,14 @@ export default function ProjectDetail() {
 
       if (error) {
         toast({
-          title: "Errore",
+          title: t('error'),
           description: error.message,
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Transazione aggiornata",
-          description: "La transazione è stata modificata",
+          title: t('transactionUpdated'),
+          description: t('transactionModified'),
         });
         setOpen(false);
         setEditingTransaction(null);
@@ -137,14 +141,14 @@ export default function ProjectDetail() {
 
       if (error) {
         toast({
-          title: "Errore",
+          title: t('error'),
           description: error.message,
           variant: "destructive",
         });
       } else {
         toast({
-          title: "Transazione aggiunta",
-          description: "La transazione è stata registrata",
+          title: t('transactionAdded'),
+          description: t('transactionRecorded'),
         });
         setOpen(false);
         form.reset();
@@ -176,14 +180,14 @@ export default function ProjectDetail() {
 
     if (error) {
       toast({
-        title: "Errore",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Transazione eliminata",
-        description: "La transazione è stata rimossa",
+        title: t('transactionDeleted'),
+        description: t('transactionRemoved'),
       });
       setPage(0);
       loadTransactions();
@@ -205,14 +209,14 @@ export default function ProjectDetail() {
 
     if (error) {
       toast({
-        title: "Errore",
+        title: t('error'),
         description: error.message,
         variant: "destructive",
       });
     } else {
       toast({
-        title: "Progetto eliminato",
-        description: "Il progetto è stato rimosso con successo",
+        title: t('projectDeleted'),
+        description: t('projectRemovedSuccess'),
       });
       navigate("/projects");
     }
@@ -266,7 +270,7 @@ export default function ProjectDetail() {
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => setDeleteProjectDialogOpen(true)} className="text-destructive">
               <Trash2 className="mr-2 h-4 w-4" />
-              Elimina Progetto
+              {t('deleteProject')}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -284,14 +288,14 @@ export default function ProjectDetail() {
           <DialogTrigger asChild>
             <Button>
               <Plus className="mr-2 h-4 w-4" />
-              Nuova Transazione
+              {t('newTransaction')}
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>{editingTransaction ? "Modifica Transazione" : "Aggiungi Transazione"}</DialogTitle>
+              <DialogTitle>{editingTransaction ? t('editTransaction') : t('addTransaction')}</DialogTitle>
               <DialogDescription>
-                {editingTransaction ? "Modifica i dati della transazione" : "Registra un'entrata o un'uscita per questo progetto"}
+                {editingTransaction ? t('editTransactionDesc') : t('registerTransactionDesc')}
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
@@ -301,7 +305,7 @@ export default function ProjectDetail() {
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tipo *</FormLabel>
+                      <FormLabel>{t('type')} *</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger>
@@ -309,8 +313,8 @@ export default function ProjectDetail() {
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="income">Entrata</SelectItem>
-                          <SelectItem value="expense">Uscita</SelectItem>
+                          <SelectItem value="income">{t('income')}</SelectItem>
+                          <SelectItem value="expense">{t('expense')}</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -322,7 +326,7 @@ export default function ProjectDetail() {
                   name="amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Importo * ({project.currency})</FormLabel>
+                      <FormLabel>{t('amount')} * ({project.currency})</FormLabel>
                       <FormControl>
                         <Input
                           type="number"
@@ -341,9 +345,9 @@ export default function ProjectDetail() {
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Categoria</FormLabel>
+                      <FormLabel>{t('category')}</FormLabel>
                       <FormControl>
-                        <Input {...field} placeholder="es. Vendite, Marketing, Stipendi" />
+                        <Input {...field} placeholder={t('categoryPlaceholder')} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -354,7 +358,7 @@ export default function ProjectDetail() {
                   name="note"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Note</FormLabel>
+                      <FormLabel>{t('notes')}</FormLabel>
                       <FormControl>
                         <Textarea {...field} />
                       </FormControl>
@@ -367,7 +371,7 @@ export default function ProjectDetail() {
                   name="transaction_date"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Data</FormLabel>
+                      <FormLabel>{t('date')}</FormLabel>
                       <FormControl>
                         <Input type="date" {...field} />
                       </FormControl>
@@ -377,7 +381,7 @@ export default function ProjectDetail() {
                 />
                 <Button type="submit" className="w-full" disabled={form.formState.isSubmitting}>
                   {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  {editingTransaction ? "Salva Modifiche" : "Aggiungi"}
+                  {editingTransaction ? t('saveChanges') : t('add')}
                 </Button>
               </form>
             </Form>
@@ -388,12 +392,12 @@ export default function ProjectDetail() {
       <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Totale Entrate</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalIncome')}</CardTitle>
             <TrendingUp className="h-4 w-4 text-chart-1" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-chart-1">
-              {new Intl.NumberFormat('it-IT', {
+              {new Intl.NumberFormat(numberLocale, {
                 style: 'currency',
                 currency: project.currency,
               }).format(totalIncome)}
@@ -403,12 +407,12 @@ export default function ProjectDetail() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Totale Uscite</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('totalExpenses')}</CardTitle>
             <TrendingDown className="h-4 w-4 text-chart-2" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-chart-2">
-              {new Intl.NumberFormat('it-IT', {
+              {new Intl.NumberFormat(numberLocale, {
                 style: 'currency',
                 currency: project.currency,
               }).format(totalExpense)}
@@ -418,11 +422,11 @@ export default function ProjectDetail() {
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Profitto Netto</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('netProfit')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${netProfit >= 0 ? 'text-chart-1' : 'text-chart-2'}`}>
-              {new Intl.NumberFormat('it-IT', {
+              {new Intl.NumberFormat(numberLocale, {
                 style: 'currency',
                 currency: project.currency,
               }).format(netProfit)}
@@ -433,15 +437,15 @@ export default function ProjectDetail() {
 
       <Tabs defaultValue="transactions">
         <TabsList>
-          <TabsTrigger value="transactions">Transazioni</TabsTrigger>
-          <TabsTrigger value="info">Info Progetto</TabsTrigger>
+          <TabsTrigger value="transactions">{t('transactions')}</TabsTrigger>
+          <TabsTrigger value="info">{t('projectInfo')}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="transactions" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Storico Transazioni</CardTitle>
-              <CardDescription>Tutte le entrate e uscite del progetto</CardDescription>
+              <CardTitle>{t('transactionHistory')}</CardTitle>
+              <CardDescription>{t('allTransactions')}</CardDescription>
             </CardHeader>
             <CardContent>
               {loadingTransactions ? (
@@ -465,7 +469,7 @@ export default function ProjectDetail() {
                 </div>
               ) : transactions.length === 0 ? (
                 <p className="text-center text-muted-foreground py-8">
-                  Nessuna transazione registrata
+                  {t('noTransactionsRecorded')}
                 </p>
               ) : (
                 <>
@@ -484,7 +488,7 @@ export default function ProjectDetail() {
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="font-medium">
-                                {new Intl.NumberFormat('it-IT', {
+                                {new Intl.NumberFormat(numberLocale, {
                                   style: 'currency',
                                   currency: project.currency,
                                 }).format(transaction.amount)}
@@ -498,25 +502,17 @@ export default function ProjectDetail() {
                             )}
                           </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <div className="text-sm text-muted-foreground mr-2">
-                            {new Date(transaction.transaction_date).toLocaleDateString('it-IT')}
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => handleEdit(transaction)}
-                          >
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => openDeleteDialog(transaction.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
+                         <div className="flex items-center gap-2">
+                           <div className="text-sm text-muted-foreground mr-2">
+                             {new Date(transaction.transaction_date).toLocaleDateString(numberLocale)}
+                           </div>
+                           <Button variant="ghost" size="icon" onClick={() => handleEdit(transaction)} title={t('edit')}>
+                             <Pencil className="h-4 w-4" />
+                           </Button>
+                           <Button variant="ghost" size="icon" onClick={() => openDeleteDialog(transaction.id)} title={t('deleteTransaction')}>
+                             <Trash2 className="h-4 w-4 text-destructive" />
+                           </Button>
+                         </div>
                       </div>
                     ))}
                   </div>
