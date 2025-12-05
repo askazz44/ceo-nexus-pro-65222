@@ -74,7 +74,7 @@ export default function Projects() {
       .from('profiles')
       .select('subscription_tier')
       .eq('id', user.id)
-      .single();
+      .maybeSingle();
 
     // Conta progetti attuali
     const { count } = await supabase

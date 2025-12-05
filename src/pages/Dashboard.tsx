@@ -171,7 +171,7 @@ export default function Dashboard() {
         profit: income - expense
       };
     });
-  }, [filteredProjects, timeRange]);
+  }, [filteredProjects, timeRange, dLocale]);
 
   const categoryData = useMemo(() => {
     const categories: { [key: string]: number } = {};
