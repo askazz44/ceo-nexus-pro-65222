@@ -1,14 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from '@/lib/i18n';
 import type { Project, ProjectWithTransactions } from '@/types/project';
 
 export function useProjects(includeTransactions = false) {
   const [projects, setProjects] = useState<Project[] | ProjectWithTransactions[]>([]);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-  const { t } = useTranslation();
 
   const loadProjects = useCallback(async () => {
     setLoading(true);
@@ -31,15 +27,12 @@ export function useProjects(includeTransactions = false) {
         setProjects(data as Project[] || []);
       }
     } catch (error: any) {
-      toast({
-        title: t('error'),
-        description: error.message || t('unableToLoadProjects'),
-        variant: 'destructive',
-      });
+      console.error('Error loading projects:', error);
     } finally {
       setLoading(false);
     }
-  }, [includeTransactions, toast, t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [includeTransactions]);
 
   useEffect(() => {
     loadProjects();
@@ -51,8 +44,6 @@ export function useProjects(includeTransactions = false) {
 export function useProject(projectId: string | undefined) {
   const [project, setProject] = useState<Project | null>(null);
   const [loading, setLoading] = useState(true);
-  const { toast } = useToast();
-  const { t } = useTranslation();
 
   const loadProject = useCallback(async () => {
     if (!projectId) return;
@@ -63,21 +54,18 @@ export function useProject(projectId: string | undefined) {
         .from('projects')
         .select('*')
         .eq('id', projectId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       setProject(data);
     } catch (error: any) {
-      toast({
-        title: t('error'),
-        description: t('projectNotFound'),
-        variant: 'destructive',
-      });
+      console.error('Error loading project:', error);
       setProject(null);
     } finally {
       setLoading(false);
     }
-  }, [projectId, toast, t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId]);
 
   useEffect(() => {
     loadProject();
