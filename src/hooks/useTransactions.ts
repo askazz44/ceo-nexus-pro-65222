@@ -1,7 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { useToast } from '@/hooks/use-toast';
-import { useTranslation } from '@/lib/i18n';
 import type { Transaction, ProjectStats } from '@/types/project';
 
 interface UseTransactionsOptions {
@@ -15,8 +13,6 @@ export function useTransactions({ projectId, page = 0, itemsPerPage = 20 }: UseT
   const [allTransactions, setAllTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
-  const { toast } = useToast();
-  const { t } = useTranslation();
 
   const loadTransactions = useCallback(async () => {
     if (!projectId) return;
@@ -38,15 +34,12 @@ export function useTransactions({ projectId, page = 0, itemsPerPage = 20 }: UseT
       setTransactions(data || []);
       setTotalPages(Math.ceil((count || 0) / itemsPerPage));
     } catch (error: any) {
-      toast({
-        title: t('error'),
-        description: error.message,
-        variant: 'destructive',
-      });
+      console.error('Error loading transactions:', error);
     } finally {
       setLoading(false);
     }
-  }, [projectId, page, itemsPerPage, toast, t]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [projectId, page, itemsPerPage]);
 
   const loadAllTransactions = useCallback(async () => {
     if (!projectId) return;
