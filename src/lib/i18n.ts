@@ -290,6 +290,16 @@ export const translations = {
     retry: 'Riprova',
     somethingWentWrong: 'Qualcosa è andato storto',
     unexpectedError: 'Si è verificato un errore imprevisto',
+    
+    // Project Charts
+    noTransactionsForCharts: 'Aggiungi transazioni per visualizzare i grafici',
+    last3Months: 'Ultimi 3 mesi',
+    monthlyComparison: 'Confronto Mensile',
+    last6Months: 'Ultimi 6 mesi',
+    incomeByCategory: 'Entrate per Categoria',
+    incomeDistribution: 'Distribuzione delle entrate',
+    uncategorized: 'Non categorizzato',
+    analytics: 'Analytics',
   },
   en: {
     // Navigation
@@ -578,6 +588,16 @@ export const translations = {
     retry: 'Retry',
     somethingWentWrong: 'Something went wrong',
     unexpectedError: 'An unexpected error occurred',
+    
+    // Project Charts
+    noTransactionsForCharts: 'Add transactions to view charts',
+    last3Months: 'Last 3 months',
+    monthlyComparison: 'Monthly Comparison',
+    last6Months: 'Last 6 months',
+    incomeByCategory: 'Income by Category',
+    incomeDistribution: 'Income distribution',
+    uncategorized: 'Uncategorized',
+    analytics: 'Analytics',
   },
 };
 
