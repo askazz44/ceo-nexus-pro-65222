@@ -14,36 +14,10 @@ export function useTransactions({ projectId, page = 0, itemsPerPage = 20 }: UseT
   const [loading, setLoading] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
 
-  const loadTransactions = useCallback(async () => {
-    if (!projectId) return;
-
-    setLoading(true);
-    try {
-      const from = page * itemsPerPage;
-      const to = from + itemsPerPage - 1;
-
-      const { data, error, count } = await supabase
-        .from('transactions')
-        .select('*', { count: 'exact' })
-        .eq('project_id', projectId)
-        .order('transaction_date', { ascending: false })
-        .range(from, to);
-
-      if (error) throw error;
-      
-      setTransactions(data || []);
-      setTotalPages(Math.ceil((count || 0) / itemsPerPage));
-    } catch (error: any) {
-      console.error('Error loading transactions:', error);
-    } finally {
-      setLoading(false);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [projectId, page, itemsPerPage]);
-
   const loadAllTransactions = useCallback(async () => {
     if (!projectId) return;
 
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('transactions')
@@ -52,16 +26,34 @@ export function useTransactions({ projectId, page = 0, itemsPerPage = 20 }: UseT
         .order('transaction_date', { ascending: false });
 
       if (error) throw error;
-      setAllTransactions(data || []);
+      
+      const all = data || [];
+      setAllTransactions(all);
+      
+      // Paginate from allTransactions locally
+      const from = page * itemsPerPage;
+      const to = from + itemsPerPage;
+      setTransactions(all.slice(from, to));
+      setTotalPages(Math.ceil(all.length / itemsPerPage));
     } catch (error: any) {
-      console.error('Error loading all transactions:', error);
+      console.error('Error loading transactions:', error);
+    } finally {
+      setLoading(false);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [projectId]);
 
+  // Update pagination when page changes (without refetching)
   useEffect(() => {
-    loadTransactions();
+    const from = page * itemsPerPage;
+    const to = from + itemsPerPage;
+    setTransactions(allTransactions.slice(from, to));
+    setTotalPages(Math.ceil(allTransactions.length / itemsPerPage));
+  }, [page, itemsPerPage, allTransactions]);
+
+  useEffect(() => {
     loadAllTransactions();
-  }, [loadTransactions, loadAllTransactions]);
+  }, [loadAllTransactions]);
 
   const stats: ProjectStats = useMemo(() => {
     const totalIncome = allTransactions
@@ -86,6 +78,6 @@ export function useTransactions({ projectId, page = 0, itemsPerPage = 20 }: UseT
     stats,
     loading,
     totalPages,
-    refetch: loadTransactions,
+    refetch: loadAllTransactions,
   };
 }

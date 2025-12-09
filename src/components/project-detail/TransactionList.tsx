@@ -93,10 +93,10 @@ export function TransactionList({
               className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-center gap-4 flex-1">
-                {transaction.type === 'income' ? (
-                  <TrendingUp className="h-5 w-5 text-chart-1" />
+              {transaction.type === 'income' ? (
+                  <TrendingUp className="h-5 w-5 text-income" />
                 ) : (
-                  <TrendingDown className="h-5 w-5 text-chart-2" />
+                  <TrendingDown className="h-5 w-5 text-expense" />
                 )}
                 <div className="flex-1">
                   <div className="flex items-center gap-2">

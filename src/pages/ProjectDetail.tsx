@@ -25,7 +25,7 @@ export default function ProjectDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   
   const { project, loading: projectLoading } = useProject(id);
   const [page, setPage] = useState(0);
@@ -273,7 +273,7 @@ export default function ProjectDetail() {
                 <div>
                   <p className="text-sm font-medium text-muted-foreground">{t('targetRevenue')}</p>
                   <p className="mt-1">
-                    {new Intl.NumberFormat('it-IT', {
+                    {new Intl.NumberFormat(language === 'it' ? 'it-IT' : 'en-US', {
                       style: 'currency',
                       currency: project.currency,
                     }).format(Number(project.target_revenue))}
