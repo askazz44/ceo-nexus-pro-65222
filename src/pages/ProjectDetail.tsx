@@ -17,6 +17,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { ProjectStatsCards } from "@/components/project-detail/ProjectStats";
 import { TransactionForm } from "@/components/project-detail/TransactionForm";
 import { TransactionList } from "@/components/project-detail/TransactionList";
+import { ProjectCharts } from "@/components/project-detail/ProjectCharts";
 import type { TransactionFormData } from "@/lib/schemas/transactionSchema";
 import type { Transaction } from "@/types/project";
 
@@ -228,6 +229,7 @@ export default function ProjectDetail() {
       <Tabs defaultValue="transactions">
         <TabsList>
           <TabsTrigger value="transactions">{t('transactions')}</TabsTrigger>
+          <TabsTrigger value="analytics">{t('analytics')}</TabsTrigger>
           <TabsTrigger value="info">{t('projectInfo')}</TabsTrigger>
         </TabsList>
 
@@ -242,6 +244,10 @@ export default function ProjectDetail() {
             onEdit={handleEdit}
             onDelete={openDeleteDialog}
           />
+        </TabsContent>
+
+        <TabsContent value="analytics" className="space-y-4">
+          <ProjectCharts transactions={allTransactions} currency={project.currency} />
         </TabsContent>
 
         <TabsContent value="info">
