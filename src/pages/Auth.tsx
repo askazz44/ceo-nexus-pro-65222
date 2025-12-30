@@ -53,10 +53,13 @@ export default function Auth() {
 
   const handleSignUp = async (data: AuthSignUpFormData) => {
     try {
+      const redirectUrl = `${window.location.origin}/dashboard`;
+      
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
+          emailRedirectTo: redirectUrl,
           data: {
             full_name: data.fullName,
           },

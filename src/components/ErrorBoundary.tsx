@@ -2,6 +2,7 @@ import { Component, ReactNode } from 'react';
 import { AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { getLanguage } from '@/lib/i18n';
 
 interface Props {
   children: ReactNode;
@@ -28,6 +29,9 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
+      const language = getLanguage();
+      const isIt = language === 'it';
+      
       return (
         <div className="flex min-h-screen items-center justify-center p-4 bg-background">
           <Card className="max-w-md w-full">
@@ -35,9 +39,11 @@ export class ErrorBoundary extends Component<Props, State> {
               <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
                 <AlertCircle className="h-6 w-6 text-destructive" />
               </div>
-              <CardTitle className="text-center">Qualcosa è andato storto</CardTitle>
+              <CardTitle className="text-center">
+                {isIt ? 'Qualcosa è andato storto' : 'Something went wrong'}
+              </CardTitle>
               <CardDescription className="text-center">
-                Si è verificato un errore imprevisto
+                {isIt ? 'Si è verificato un errore imprevisto' : 'An unexpected error occurred'}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -48,14 +54,14 @@ export class ErrorBoundary extends Component<Props, State> {
               )}
               <div className="flex flex-col gap-2">
                 <Button onClick={() => window.location.href = '/'} className="w-full">
-                  Torna alla Home
+                  {isIt ? 'Torna alla Home' : 'Go to Home'}
                 </Button>
                 <Button 
                   onClick={() => this.setState({ hasError: false })} 
                   variant="outline"
                   className="w-full"
                 >
-                  Riprova
+                  {isIt ? 'Riprova' : 'Try again'}
                 </Button>
               </div>
             </CardContent>
