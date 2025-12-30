@@ -120,7 +120,7 @@ const Index = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={() => navigate('/subscription')}
+                onClick={() => navigate('/auth')}
               >
                 {language === 'it' ? 'Vedi Piani' : 'View Plans'}
               </Button>

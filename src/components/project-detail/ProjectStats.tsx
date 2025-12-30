@@ -18,10 +18,10 @@ export function ProjectStatsCards({ stats, currency }: ProjectStatsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">{t('totalIncome')}</CardTitle>
-          <TrendingUp className="h-4 w-4 text-chart-1" />
+          <TrendingUp className="h-4 w-4 text-income" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-chart-1">
+          <div className="text-2xl font-bold text-income">
             {formatCurrency(stats.totalIncome, currency)}
           </div>
         </CardContent>
@@ -30,10 +30,10 @@ export function ProjectStatsCards({ stats, currency }: ProjectStatsProps) {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">{t('totalExpenses')}</CardTitle>
-          <TrendingDown className="h-4 w-4 text-chart-2" />
+          <TrendingDown className="h-4 w-4 text-expense" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold text-chart-2">
+          <div className="text-2xl font-bold text-expense">
             {formatCurrency(stats.totalExpense, currency)}
           </div>
         </CardContent>
@@ -44,7 +44,7 @@ export function ProjectStatsCards({ stats, currency }: ProjectStatsProps) {
           <CardTitle className="text-sm font-medium">{t('netProfit')}</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className={`text-2xl font-bold ${stats.netProfit >= 0 ? 'text-chart-1' : 'text-chart-2'}`}>
+          <div className={`text-2xl font-bold ${stats.netProfit >= 0 ? 'text-income' : 'text-expense'}`}>
             {formatCurrency(stats.netProfit, currency)}
           </div>
         </CardContent>
