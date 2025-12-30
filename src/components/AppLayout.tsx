@@ -46,7 +46,7 @@ export default function AppLayout() {
   };
 
   const navItems = [
-    { path: "/", label: t('dashboard'), icon: LayoutDashboard },
+    { path: "/dashboard", label: t('dashboard'), icon: LayoutDashboard },
     { path: "/projects", label: t('projects'), icon: FolderKanban },
     { path: "/subscription", label: t('subscription'), icon: CreditCard },
     { path: "/settings", label: t('settings'), icon: Settings },

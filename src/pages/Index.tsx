@@ -15,6 +15,8 @@ import {
   FolderKanban
 } from "lucide-react";
 import { useTranslation } from "@/lib/i18n";
+import { LanguageToggle } from "@/components/LanguageToggle";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -76,6 +78,12 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header with toggles */}
+      <header className="fixed top-0 right-0 p-4 flex items-center gap-2 z-50">
+        <LanguageToggle />
+        <ThemeToggle />
+      </header>
+
       {/* Hero Section */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
