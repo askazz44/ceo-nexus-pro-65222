@@ -17,9 +17,10 @@ import { projectSchema, type ProjectFormData } from "@/lib/schemas/projectSchema
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useTranslation } from "@/lib/i18n";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 export default function Projects() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [projects, setProjects] = useState<any[]>([]);
@@ -392,7 +393,7 @@ export default function Projects() {
                     <div className="flex-1">
                       <p className="text-xs text-muted-foreground">Target Revenue</p>
                       <p className="font-bold text-income">
-                        {new Intl.NumberFormat('it-IT', {
+                        {new Intl.NumberFormat(language === 'it' ? 'it-IT' : 'en-US', {
                           style: 'currency',
                           currency: project.currency,
                         }).format(project.target_revenue)}
