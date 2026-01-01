@@ -7,10 +7,11 @@ import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
 import { Mail, Languages, Moon, Sun, User, Bell } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { Language, getLanguage, setLanguage } from "@/lib/i18n";
+import { Language, getLanguage, setLanguage, useTranslation } from "@/lib/i18n";
 
 export default function Settings() {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [language, setLang] = useState<Language>('it');
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [emailNotifications, setEmailNotifications] = useState(true);
@@ -36,8 +37,8 @@ export default function Settings() {
     setLang(newLang);
     setLanguage(newLang);
     toast({
-      title: newLang === 'it' ? "Lingua cambiata" : "Language changed",
-      description: newLang === 'it' ? "Impostazioni salvate" : "Settings saved",
+      title: t('languageChanged'),
+      description: t('settingsSaved'),
     });
     setTimeout(() => window.location.reload(), 500);
   };
@@ -48,8 +49,8 @@ export default function Settings() {
     localStorage.setItem('theme', newTheme);
     document.documentElement.classList.toggle('dark', newTheme === 'dark');
     toast({
-      title: language === 'it' ? "Tema cambiato" : "Theme changed",
-      description: language === 'it' ? "Impostazioni salvate" : "Settings saved",
+      title: t('themeChanged'),
+      description: t('settingsSaved'),
     });
   };
 
@@ -61,10 +62,10 @@ export default function Settings() {
     <div className="space-y-6 animate-fade-in">
       <div>
         <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-          {language === 'it' ? 'Impostazioni' : 'Settings'}
+          {t('settingsTitle')}
         </h1>
         <p className="text-muted-foreground mt-2">
-          {language === 'it' ? 'Gestisci le tue preferenze e impostazioni' : 'Manage your preferences and settings'}
+          {t('managePreferences')}
         </p>
       </div>
 
@@ -76,9 +77,9 @@ export default function Settings() {
               <User className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <CardTitle>{language === 'it' ? 'Account' : 'Account'}</CardTitle>
+              <CardTitle>{t('account')}</CardTitle>
               <CardDescription>
-                {language === 'it' ? 'Informazioni sul tuo account' : 'Your account information'}
+                {t('accountInfo')}
               </CardDescription>
             </div>
           </div>
@@ -101,9 +102,9 @@ export default function Settings() {
               <Moon className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <CardTitle>{language === 'it' ? 'Aspetto' : 'Appearance'}</CardTitle>
+              <CardTitle>{t('appearance')}</CardTitle>
               <CardDescription>
-                {language === 'it' ? 'Personalizza l\'aspetto dell\'app' : 'Customize the app appearance'}
+                {t('customizeAppearance')}
               </CardDescription>
             </div>
           </div>
@@ -115,10 +116,10 @@ export default function Settings() {
               {theme === 'light' ? <Sun className="h-5 w-5 text-primary" /> : <Moon className="h-5 w-5 text-primary" />}
               <div>
                 <Label className="text-sm font-medium">
-                  {language === 'it' ? 'Tema Scuro' : 'Dark Theme'}
+                  {t('darkTheme')}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  {language === 'it' ? 'Attiva il tema scuro' : 'Enable dark mode'}
+                  {t('enableDarkMode')}
                 </p>
               </div>
             </div>
@@ -133,10 +134,10 @@ export default function Settings() {
               <Languages className="h-5 w-5 text-primary" />
               <div>
                 <Label className="text-sm font-medium">
-                  {language === 'it' ? 'Lingua' : 'Language'}
+                  {t('language')}
                 </Label>
                 <p className="text-sm text-muted-foreground">
-                  {language === 'it' ? `Lingua corrente: Italiano` : `Current language: English`}
+                  {t('currentLanguage')}
                 </p>
               </div>
             </div>
@@ -155,9 +156,9 @@ export default function Settings() {
               <Bell className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <CardTitle>{language === 'it' ? 'Notifiche' : 'Notifications'}</CardTitle>
+              <CardTitle>{t('notifications')}</CardTitle>
               <CardDescription>
-                {language === 'it' ? 'Gestisci le notifiche' : 'Manage your notifications'}
+                {t('manageNotifications')}
               </CardDescription>
             </div>
           </div>
@@ -166,10 +167,10 @@ export default function Settings() {
           <div className="flex items-center justify-between">
             <div>
               <Label className="text-sm font-medium">
-                {language === 'it' ? 'Notifiche Email' : 'Email Notifications'}
+                {t('emailNotifications')}
               </Label>
               <p className="text-sm text-muted-foreground">
-                {language === 'it' ? 'Ricevi aggiornamenti via email' : 'Receive updates via email'}
+                {t('receiveEmailUpdates')}
               </p>
             </div>
             <Switch 
@@ -177,7 +178,7 @@ export default function Settings() {
               onCheckedChange={(checked) => {
                 setEmailNotifications(checked);
                 toast({
-                  title: language === 'it' ? "Preferenze salvate" : "Preferences saved",
+                  title: t('preferencesSaved'),
                 });
               }} 
             />
@@ -193,9 +194,9 @@ export default function Settings() {
               <Mail className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <CardTitle>{language === 'it' ? 'Feedback' : 'Feedback'}</CardTitle>
+              <CardTitle>{t('feedbackTitle')}</CardTitle>
               <CardDescription>
-                {language === 'it' ? 'Aiutaci a migliorare' : 'Help us improve'}
+                {t('helpImprove')}
               </CardDescription>
             </div>
           </div>
@@ -203,7 +204,7 @@ export default function Settings() {
         <CardContent>
           <Button onClick={handleFeedback} className="w-full btn-glow">
             <Mail className="mr-2 h-4 w-4" />
-            {language === 'it' ? 'Invia Feedback' : 'Send Feedback'}
+            {t('sendFeedback')}
           </Button>
         </CardContent>
       </Card>
@@ -213,7 +214,7 @@ export default function Settings() {
         <CardContent className="py-6">
           <div className="text-center text-sm text-muted-foreground">
             <p className="mb-1">
-              {language === 'it' ? 'Realizzato con' : 'Made with'} ❤️ {language === 'it' ? 'da' : 'by'}
+              {t('madeWith')} ❤️
             </p>
             <a 
               href="https://www.linkedin.com/in/ascanio-vecchio-110990384" 
