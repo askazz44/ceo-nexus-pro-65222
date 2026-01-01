@@ -1,6 +1,8 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
 import { useTranslation } from "@/lib/i18n";
+import { Button } from "@/components/ui/button";
+import { Home } from "lucide-react";
 
 const NotFound = () => {
   const location = useLocation();
@@ -11,13 +13,16 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">{t('notFound')}</h1>
-        <p className="mb-4 text-xl text-gray-600">{t('pageNotFound')}</p>
-        <a href="/" className="text-blue-500 underline hover:text-blue-700">
-          {t('returnHome')}
-        </a>
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <div className="text-center space-y-6">
+        <h1 className="text-8xl font-bold text-primary">{t('notFound')}</h1>
+        <p className="text-xl text-muted-foreground">{t('pageNotFound')}</p>
+        <Button asChild>
+          <Link to="/">
+            <Home className="mr-2 h-4 w-4" />
+            {t('returnHome')}
+          </Link>
+        </Button>
       </div>
     </div>
   );
