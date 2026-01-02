@@ -300,6 +300,18 @@ export const translations = {
     incomeDistribution: 'Distribuzione delle entrate',
     uncategorized: 'Non categorizzato',
     analytics: 'Analytics',
+    
+    // Transaction Filters
+    filters: 'Filtri',
+    resetFilters: 'Rimuovi filtri',
+    searchNotes: 'Cerca nelle note...',
+    allTypes: 'Tutti i tipi',
+    allCategories: 'Tutte le categorie',
+    dateFrom: 'Data da',
+    dateTo: 'Data a',
+    selectDate: 'Seleziona data',
+    noResultsFound: 'Nessun risultato trovato',
+    clearFilters: 'Rimuovi i filtri per vedere tutte le transazioni',
   },
   en: {
     // Navigation
@@ -598,6 +610,18 @@ export const translations = {
     incomeDistribution: 'Income distribution',
     uncategorized: 'Uncategorized',
     analytics: 'Analytics',
+    
+    // Transaction Filters
+    filters: 'Filters',
+    resetFilters: 'Reset filters',
+    searchNotes: 'Search notes...',
+    allTypes: 'All types',
+    allCategories: 'All categories',
+    dateFrom: 'Date from',
+    dateTo: 'Date to',
+    selectDate: 'Select date',
+    noResultsFound: 'No results found',
+    clearFilters: 'Clear filters to see all transactions',
   },
 };
 

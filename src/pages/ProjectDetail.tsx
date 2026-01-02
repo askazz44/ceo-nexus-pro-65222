@@ -18,6 +18,7 @@ import { ProjectStatsCards } from "@/components/project-detail/ProjectStats";
 import { TransactionForm } from "@/components/project-detail/TransactionForm";
 import { TransactionList } from "@/components/project-detail/TransactionList";
 import { ProjectCharts } from "@/components/project-detail/ProjectCharts";
+import { defaultFilters, TransactionFiltersState } from "@/components/project-detail/TransactionFilters";
 import type { TransactionFormData } from "@/lib/schemas/transactionSchema";
 import type { Transaction } from "@/types/project";
 
@@ -29,10 +30,13 @@ export default function ProjectDetail() {
   
   const { project, loading: projectLoading } = useProject(id);
   const [page, setPage] = useState(0);
-  const { transactions, allTransactions, stats, loading: transactionsLoading, totalPages, refetch } = useTransactions({
+  const [filters, setFilters] = useState<TransactionFiltersState>(defaultFilters);
+  
+  const { transactions, allTransactions, stats, loading: transactionsLoading, totalPages, categories, refetch } = useTransactions({
     projectId: id,
     page,
     itemsPerPage: 20,
+    filters,
   });
 
   const [open, setOpen] = useState(false);
@@ -40,6 +44,12 @@ export default function ProjectDetail() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
   const [deleteProjectDialogOpen, setDeleteProjectDialogOpen] = useState(false);
+
+  // Reset page when filters change
+  const handleFiltersChange = (newFilters: TransactionFiltersState) => {
+    setFilters(newFilters);
+    setPage(0);
+  };
 
   const handleSubmit = async (data: TransactionFormData) => {
     if (editingTransaction) {
@@ -240,6 +250,9 @@ export default function ProjectDetail() {
             loading={transactionsLoading}
             page={page}
             totalPages={totalPages}
+            categories={categories}
+            filters={filters}
+            onFiltersChange={handleFiltersChange}
             onPageChange={setPage}
             onEdit={handleEdit}
             onDelete={openDeleteDialog}
