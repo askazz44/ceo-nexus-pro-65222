@@ -10,7 +10,9 @@ import {
   Menu,
   X,
   Shield,
-  Settings
+  Settings,
+  PiggyBank,
+  ArrowLeftRight
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useTranslation } from '@/lib/i18n';
@@ -48,6 +50,8 @@ export default function AppLayout() {
   const navItems = [
     { path: "/dashboard", label: t('dashboard'), icon: LayoutDashboard },
     { path: "/projects", label: t('projects'), icon: FolderKanban },
+    { path: "/budgets", label: t('budgets'), icon: PiggyBank },
+    { path: "/comparison", label: t('comparison'), icon: ArrowLeftRight },
     { path: "/subscription", label: t('subscription'), icon: CreditCard },
     { path: "/settings", label: t('settings'), icon: Settings },
   ];
