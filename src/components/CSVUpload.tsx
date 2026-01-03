@@ -111,6 +111,16 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
     });
   };
 
+  // Sanitize CSV field to prevent formula injection in Excel
+  const sanitizeCSVField = (value: string | null): string | null => {
+    if (!value) return value;
+    // Prefix dangerous characters with single quote to prevent Excel formula execution
+    if (/^[=+\-@\t\r]/.test(value.trim())) {
+      return "'" + value;
+    }
+    return value;
+  };
+
   const processCSVData = (rows: CSVRow[]) => {
     const transactions: any[] = [];
     
@@ -118,8 +128,8 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
       const type = detectTransactionType(row);
       const amount = extractAmount(row);
       const date = extractDate(row);
-      const category = extractCategory(row);
-      const note = extractNote(row);
+      const category = sanitizeCSVField(extractCategory(row));
+      const note = sanitizeCSVField(extractNote(row));
 
       if (amount && date && type) {
         transactions.push({
