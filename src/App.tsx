@@ -20,6 +20,8 @@ import Settings from "./pages/Settings";
 import Install from "./pages/Install";
 import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
+import Budgets from "./pages/Budgets";
+import ComparativeAnalysis from "./pages/ComparativeAnalysis";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -81,6 +83,8 @@ const App = () => (
               <Route path="/subscription/canceled" element={<SubscriptionCanceled />} />
               <Route path="/settings" element={<Settings />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/budgets" element={<Budgets />} />
+              <Route path="/comparison" element={<ComparativeAnalysis />} />
             </Route>
 
             <Route path="*" element={<NotFound />} />

@@ -11,6 +11,8 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
 import { useTranslation } from "@/lib/i18n";
+import { BudgetAlerts } from "@/components/budgets/BudgetAlerts";
+import { useCategoryBudgets } from "@/hooks/useCategoryBudgets";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -34,6 +36,10 @@ export default function Dashboard() {
   const [allProjects, setAllProjects] = useState<any[]>([]);
   const [selectedProject, setSelectedProject] = useState<string>("all");
   const [timeRange, setTimeRange] = useState<"week" | "month" | "year">("month");
+  
+  // Budget alerts
+  const { budgetAlerts } = useCategoryBudgets();
+  const criticalAlerts = budgetAlerts.filter(a => a.percentage >= 80);
 
   useEffect(() => {
     loadDashboardData();
@@ -443,6 +449,11 @@ export default function Dashboard() {
           </Card>
         )}
       </div>
+
+      {/* Budget Alerts */}
+      {criticalAlerts.length > 0 && (
+        <BudgetAlerts alerts={criticalAlerts} />
+      )}
 
       {projectsWithProgress.length > 0 && (
         <Card className="shadow-md">
