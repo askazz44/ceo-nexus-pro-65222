@@ -62,8 +62,8 @@ const Index = () => {
       icon: Zap,
       title: language === 'it' ? 'Import CSV' : 'CSV Import',
       description: language === 'it' 
-        ? 'Importa facilmente le transazioni da file CSV' 
-        : 'Easily import transactions from CSV files',
+        ? 'Importa da 25+ banche: Chase, Barclays, N26, Revolut e altre' 
+        : 'Import from 25+ banks: Chase, Barclays, N26, Revolut and more',
     },
   ];
 

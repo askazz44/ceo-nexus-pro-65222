@@ -1,8 +1,9 @@
-// Bank format detection and parsing utilities for Italian banks and cards
+// Bank format detection and parsing utilities for international banks
 
 export interface BankFormat {
   name: string;
   icon: string;
+  country: 'IT' | 'US' | 'UK' | 'EU' | 'GLOBAL';
   dateColumns: string[];
   amountColumns: string[];
   descriptionColumns: string[];
@@ -14,16 +15,18 @@ export interface BankFormat {
   incomeColumn?: string;
   expenseColumn?: string;
   // Date format pattern
-  dateFormat: 'DD/MM/YYYY' | 'YYYY-MM-DD' | 'DD-MM-YYYY' | 'DD.MM.YYYY';
+  dateFormat: 'DD/MM/YYYY' | 'YYYY-MM-DD' | 'DD-MM-YYYY' | 'DD.MM.YYYY' | 'MM/DD/YYYY';
   // Amount format
   amountDecimalSeparator: ',' | '.';
   amountThousandSeparator?: '.' | ',' | ' ' | '';
 }
 
 export const BANK_FORMATS: Record<string, BankFormat> = {
+  // ============ ITALIAN BANKS ============
   postepay: {
     name: 'Postepay',
     icon: '💳',
+    country: 'IT',
     dateColumns: ['data operazione', 'data', 'data contabile', 'data valuta'],
     amountColumns: ['importo', 'importo eur', 'importo euro'],
     descriptionColumns: ['descrizione', 'causale', 'descrizione operazione'],
@@ -36,6 +39,7 @@ export const BANK_FORMATS: Record<string, BankFormat> = {
   intesa_sanpaolo: {
     name: 'Intesa Sanpaolo',
     icon: '🏦',
+    country: 'IT',
     dateColumns: ['data', 'data operazione', 'data contabile', 'data valuta'],
     amountColumns: ['importo', 'dare/avere', 'importo eur'],
     descriptionColumns: ['descrizione', 'causale', 'descrizione operazione'],
@@ -48,6 +52,7 @@ export const BANK_FORMATS: Record<string, BankFormat> = {
   unicredit: {
     name: 'UniCredit',
     icon: '🏦',
+    country: 'IT',
     dateColumns: ['data', 'data operazione', 'data contabile', 'data valuta', 'booking date'],
     amountColumns: ['importo', 'amount', 'importo eur'],
     descriptionColumns: ['descrizione', 'causale', 'description', 'descrizione operazione'],
@@ -60,6 +65,7 @@ export const BANK_FORMATS: Record<string, BankFormat> = {
   hype: {
     name: 'Hype',
     icon: '📱',
+    country: 'IT',
     dateColumns: ['data', 'date', 'data operazione'],
     amountColumns: ['importo', 'amount', 'valore'],
     descriptionColumns: ['descrizione', 'description', 'nota', 'note'],
@@ -69,9 +75,12 @@ export const BANK_FORMATS: Record<string, BankFormat> = {
     amountDecimalSeparator: ',',
     amountThousandSeparator: '.',
   },
+
+  // ============ EU DIGITAL BANKS ============
   n26: {
     name: 'N26',
     icon: '📱',
+    country: 'EU',
     dateColumns: ['date', 'data', 'booking date', 'value date'],
     amountColumns: ['amount (eur)', 'amount', 'importo', 'amount in eur'],
     descriptionColumns: ['payee', 'partner name', 'description', 'reference'],
@@ -84,6 +93,7 @@ export const BANK_FORMATS: Record<string, BankFormat> = {
   revolut: {
     name: 'Revolut',
     icon: '📱',
+    country: 'GLOBAL',
     dateColumns: ['started date', 'completed date', 'date', 'data'],
     amountColumns: ['amount', 'importo', 'value'],
     descriptionColumns: ['description', 'descrizione', 'reference'],
@@ -93,17 +103,251 @@ export const BANK_FORMATS: Record<string, BankFormat> = {
     amountDecimalSeparator: '.',
     amountThousandSeparator: ',',
   },
+  wise: {
+    name: 'Wise (TransferWise)',
+    icon: '🌍',
+    country: 'GLOBAL',
+    dateColumns: ['date', 'created date', 'finished date'],
+    amountColumns: ['amount', 'source amount', 'target amount'],
+    descriptionColumns: ['description', 'recipient', 'reference', 'note'],
+    categoryColumns: ['category', 'type'],
+    typeDetection: 'sign',
+    dateFormat: 'YYYY-MM-DD',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  monzo: {
+    name: 'Monzo',
+    icon: '📱',
+    country: 'UK',
+    dateColumns: ['date', 'created'],
+    amountColumns: ['amount', 'money out', 'money in'],
+    descriptionColumns: ['description', 'name', 'notes and #tags'],
+    categoryColumns: ['category', 'type'],
+    typeDetection: 'sign',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  starling: {
+    name: 'Starling Bank',
+    icon: '🏦',
+    country: 'UK',
+    dateColumns: ['date', 'transaction date'],
+    amountColumns: ['amount', 'amount (gbp)'],
+    descriptionColumns: ['reference', 'counter party', 'spending category'],
+    categoryColumns: ['spending category', 'category'],
+    typeDetection: 'sign',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+
+  // ============ US BANKS ============
+  chase: {
+    name: 'Chase Bank',
+    icon: '🏦',
+    country: 'US',
+    dateColumns: ['transaction date', 'posting date', 'date'],
+    amountColumns: ['amount', 'debit', 'credit'],
+    descriptionColumns: ['description', 'merchant name', 'memo'],
+    categoryColumns: ['category', 'type'],
+    typeDetection: 'sign',
+    dateFormat: 'MM/DD/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  bank_of_america: {
+    name: 'Bank of America',
+    icon: '🏦',
+    country: 'US',
+    dateColumns: ['date', 'posted date', 'transaction date'],
+    amountColumns: ['amount', 'debit', 'credit'],
+    descriptionColumns: ['description', 'payee', 'original description'],
+    categoryColumns: ['category', 'type'],
+    typeDetection: 'sign',
+    dateFormat: 'MM/DD/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  wells_fargo: {
+    name: 'Wells Fargo',
+    icon: '🏦',
+    country: 'US',
+    dateColumns: ['date', 'posted date'],
+    amountColumns: ['amount', 'withdrawal', 'deposit'],
+    descriptionColumns: ['description', 'check or slip #'],
+    categoryColumns: ['type'],
+    typeDetection: 'separate_columns',
+    incomeColumn: 'deposit',
+    expenseColumn: 'withdrawal',
+    dateFormat: 'MM/DD/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  capital_one: {
+    name: 'Capital One',
+    icon: '💳',
+    country: 'US',
+    dateColumns: ['transaction date', 'posted date', 'date'],
+    amountColumns: ['amount', 'debit', 'credit'],
+    descriptionColumns: ['description', 'payee', 'merchant'],
+    categoryColumns: ['category'],
+    typeDetection: 'sign',
+    dateFormat: 'MM/DD/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  american_express: {
+    name: 'American Express',
+    icon: '💳',
+    country: 'US',
+    dateColumns: ['date', 'transaction date'],
+    amountColumns: ['amount'],
+    descriptionColumns: ['description', 'merchant', 'extended details'],
+    categoryColumns: ['category'],
+    typeDetection: 'sign',
+    dateFormat: 'MM/DD/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  citi: {
+    name: 'Citibank',
+    icon: '🏦',
+    country: 'US',
+    dateColumns: ['date', 'transaction date', 'posted date'],
+    amountColumns: ['amount', 'debit', 'credit'],
+    descriptionColumns: ['description', 'member message'],
+    categoryColumns: ['status'],
+    typeDetection: 'sign',
+    dateFormat: 'MM/DD/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+
+  // ============ UK BANKS ============
+  barclays: {
+    name: 'Barclays',
+    icon: '🏦',
+    country: 'UK',
+    dateColumns: ['date', 'transaction date'],
+    amountColumns: ['amount', 'money in', 'money out'],
+    descriptionColumns: ['description', 'memo', 'subcategory'],
+    categoryColumns: ['category', 'subcategory'],
+    typeDetection: 'sign',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  hsbc: {
+    name: 'HSBC',
+    icon: '🏦',
+    country: 'UK',
+    dateColumns: ['date', 'transaction date'],
+    amountColumns: ['amount', 'paid out', 'paid in'],
+    descriptionColumns: ['description', 'transaction description'],
+    categoryColumns: ['type'],
+    typeDetection: 'separate_columns',
+    incomeColumn: 'paid in',
+    expenseColumn: 'paid out',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  lloyds: {
+    name: 'Lloyds Bank',
+    icon: '🏦',
+    country: 'UK',
+    dateColumns: ['transaction date', 'date'],
+    amountColumns: ['amount', 'debit amount', 'credit amount'],
+    descriptionColumns: ['transaction description', 'description'],
+    categoryColumns: ['transaction type'],
+    typeDetection: 'sign',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  natwest: {
+    name: 'NatWest',
+    icon: '🏦',
+    country: 'UK',
+    dateColumns: ['date', 'transaction date'],
+    amountColumns: ['amount', 'value'],
+    descriptionColumns: ['description', 'type'],
+    categoryColumns: ['type'],
+    typeDetection: 'sign',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  santander_uk: {
+    name: 'Santander UK',
+    icon: '🏦',
+    country: 'UK',
+    dateColumns: ['date', 'transaction date'],
+    amountColumns: ['amount', 'money in', 'money out'],
+    descriptionColumns: ['description', 'narrative'],
+    categoryColumns: [],
+    typeDetection: 'sign',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+
+  // ============ PAYMENT SERVICES ============
+  paypal: {
+    name: 'PayPal',
+    icon: '💰',
+    country: 'GLOBAL',
+    dateColumns: ['date', 'transaction date', 'data'],
+    amountColumns: ['gross', 'net', 'amount', 'lordo', 'netto'],
+    descriptionColumns: ['name', 'description', 'item title', 'nome', 'descrizione'],
+    categoryColumns: ['type', 'status', 'tipo'],
+    typeDetection: 'sign',
+    dateFormat: 'DD/MM/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  stripe: {
+    name: 'Stripe',
+    icon: '💳',
+    country: 'GLOBAL',
+    dateColumns: ['created', 'created (utc)', 'date'],
+    amountColumns: ['amount', 'gross', 'net'],
+    descriptionColumns: ['description', 'customer description', 'statement descriptor'],
+    categoryColumns: ['type', 'status'],
+    typeDetection: 'sign',
+    dateFormat: 'YYYY-MM-DD',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+  square: {
+    name: 'Square',
+    icon: '⬛',
+    country: 'US',
+    dateColumns: ['date', 'transaction date'],
+    amountColumns: ['total collected', 'gross sales', 'net total'],
+    descriptionColumns: ['description', 'item', 'customer name'],
+    categoryColumns: ['category', 'payment type'],
+    typeDetection: 'sign',
+    dateFormat: 'MM/DD/YYYY',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
+  },
+
+  // ============ GENERIC FALLBACK ============
   generic: {
-    name: 'Formato Generico',
+    name: 'Generic Format',
     icon: '📄',
-    dateColumns: ['data', 'date', 'data operazione', 'data contabile', 'data valuta'],
-    amountColumns: ['importo', 'amount', 'valore', 'value', 'somma'],
-    descriptionColumns: ['descrizione', 'description', 'causale', 'note', 'nota', 'riferimento'],
+    country: 'GLOBAL',
+    dateColumns: ['data', 'date', 'data operazione', 'data contabile', 'data valuta', 'transaction date', 'posted date'],
+    amountColumns: ['importo', 'amount', 'valore', 'value', 'somma', 'gross', 'net', 'total'],
+    descriptionColumns: ['descrizione', 'description', 'causale', 'note', 'nota', 'riferimento', 'reference', 'payee', 'merchant'],
     categoryColumns: ['categoria', 'category', 'tipo', 'type'],
     typeDetection: 'sign',
     dateFormat: 'DD/MM/YYYY',
-    amountDecimalSeparator: ',',
-    amountThousandSeparator: '.',
+    amountDecimalSeparator: '.',
+    amountThousandSeparator: ',',
   },
 };
 
@@ -293,13 +537,22 @@ export function parseDate(value: string, format: BankFormat): string | null {
   const cleaned = value.trim();
   
   // Try different date patterns
+  // Determine date order based on format
+  const isUSFormat = format.dateFormat === 'MM/DD/YYYY';
+  
   const patterns: Array<{ regex: RegExp; groups: 'dmy' | 'ymd' | 'mdy' }> = [
     { regex: /^(\d{4})-(\d{2})-(\d{2})/, groups: 'ymd' }, // YYYY-MM-DD
-    { regex: /^(\d{2})\/(\d{2})\/(\d{4})/, groups: 'dmy' }, // DD/MM/YYYY
-    { regex: /^(\d{2})-(\d{2})-(\d{4})/, groups: 'dmy' }, // DD-MM-YYYY
-    { regex: /^(\d{2})\.(\d{2})\.(\d{4})/, groups: 'dmy' }, // DD.MM.YYYY
     { regex: /^(\d{4})\/(\d{2})\/(\d{2})/, groups: 'ymd' }, // YYYY/MM/DD
+    { regex: /^(\d{2})\.(\d{2})\.(\d{4})/, groups: 'dmy' }, // DD.MM.YYYY (always European)
+    { regex: /^(\d{2})-(\d{2})-(\d{4})/, groups: 'dmy' }, // DD-MM-YYYY (always European)
   ];
+  
+  // Add format-specific slash patterns
+  if (isUSFormat) {
+    patterns.push({ regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})/, groups: 'mdy' }); // M/D/YYYY or MM/DD/YYYY
+  } else {
+    patterns.push({ regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})/, groups: 'dmy' }); // D/M/YYYY or DD/MM/YYYY
+  }
 
   for (const { regex, groups } of patterns) {
     const match = cleaned.match(regex);
