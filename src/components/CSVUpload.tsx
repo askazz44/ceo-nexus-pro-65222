@@ -35,14 +35,41 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
   const { toast } = useToast();
   const { t, language } = useTranslation();
 
-  const supportedBanks = [
-    { key: 'postepay', name: 'Postepay', icon: '💳' },
-    { key: 'intesa_sanpaolo', name: 'Intesa Sanpaolo', icon: '🏦' },
-    { key: 'unicredit', name: 'UniCredit', icon: '🏦' },
-    { key: 'hype', name: 'Hype', icon: '📱' },
-    { key: 'n26', name: 'N26', icon: '📱' },
-    { key: 'revolut', name: 'Revolut', icon: '📱' },
-  ];
+  const supportedBanksByRegion = {
+    global: [
+      { key: 'revolut', name: 'Revolut', icon: '📱' },
+      { key: 'wise', name: 'Wise', icon: '🌍' },
+      { key: 'paypal', name: 'PayPal', icon: '💰' },
+      { key: 'stripe', name: 'Stripe', icon: '💳' },
+    ],
+    us: [
+      { key: 'chase', name: 'Chase', icon: '🏦' },
+      { key: 'bank_of_america', name: 'Bank of America', icon: '🏦' },
+      { key: 'wells_fargo', name: 'Wells Fargo', icon: '🏦' },
+      { key: 'capital_one', name: 'Capital One', icon: '💳' },
+      { key: 'american_express', name: 'Amex', icon: '💳' },
+      { key: 'citi', name: 'Citi', icon: '🏦' },
+      { key: 'square', name: 'Square', icon: '⬛' },
+    ],
+    uk: [
+      { key: 'barclays', name: 'Barclays', icon: '🏦' },
+      { key: 'hsbc', name: 'HSBC', icon: '🏦' },
+      { key: 'lloyds', name: 'Lloyds', icon: '🏦' },
+      { key: 'natwest', name: 'NatWest', icon: '🏦' },
+      { key: 'santander_uk', name: 'Santander UK', icon: '🏦' },
+      { key: 'monzo', name: 'Monzo', icon: '📱' },
+      { key: 'starling', name: 'Starling', icon: '🏦' },
+    ],
+    eu: [
+      { key: 'n26', name: 'N26', icon: '📱' },
+    ],
+    it: [
+      { key: 'postepay', name: 'Postepay', icon: '💳' },
+      { key: 'intesa_sanpaolo', name: 'Intesa Sanpaolo', icon: '🏦' },
+      { key: 'unicredit', name: 'UniCredit', icon: '🏦' },
+      { key: 'hype', name: 'Hype', icon: '📱' },
+    ],
+  };
 
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -269,26 +296,64 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
         </DialogHeader>
         
         <div className="space-y-4">
-          {/* Supported Banks */}
+          {/* Supported Banks by Region */}
           <Card className="bg-muted/50">
-            <CardContent className="pt-4">
-              <p className="text-sm font-medium mb-3">
+            <CardContent className="pt-4 space-y-3">
+              <p className="text-sm font-medium">
                 {language === 'it' ? 'Formati supportati:' : 'Supported formats:'}
               </p>
-              <div className="flex flex-wrap gap-2">
-                {supportedBanks.map((bank) => (
-                  <Badge 
-                    key={bank.key} 
-                    variant="secondary"
-                    className="text-xs py-1"
-                  >
-                    {bank.icon} {bank.name}
-                  </Badge>
-                ))}
-                <Badge variant="outline" className="text-xs py-1">
-                  📄 {language === 'it' ? 'Altri formati' : 'Other formats'}
-                </Badge>
+              
+              {/* Global */}
+              <div>
+                <p className="text-xs text-muted-foreground mb-1.5">🌍 Global</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {supportedBanksByRegion.global.map((bank) => (
+                    <Badge key={bank.key} variant="secondary" className="text-xs py-0.5">
+                      {bank.icon} {bank.name}
+                    </Badge>
+                  ))}
+                </div>
               </div>
+
+              {/* US */}
+              <div>
+                <p className="text-xs text-muted-foreground mb-1.5">🇺🇸 USA</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {supportedBanksByRegion.us.map((bank) => (
+                    <Badge key={bank.key} variant="outline" className="text-xs py-0.5">
+                      {bank.icon} {bank.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* UK */}
+              <div>
+                <p className="text-xs text-muted-foreground mb-1.5">🇬🇧 UK</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {supportedBanksByRegion.uk.map((bank) => (
+                    <Badge key={bank.key} variant="outline" className="text-xs py-0.5">
+                      {bank.icon} {bank.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              {/* EU & IT */}
+              <div>
+                <p className="text-xs text-muted-foreground mb-1.5">🇪🇺 EU / 🇮🇹 Italia</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {[...supportedBanksByRegion.eu, ...supportedBanksByRegion.it].map((bank) => (
+                    <Badge key={bank.key} variant="outline" className="text-xs py-0.5">
+                      {bank.icon} {bank.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
+              <Badge variant="secondary" className="text-xs py-0.5 mt-2">
+                📄 {language === 'it' ? '+ Altri formati CSV' : '+ Other CSV formats'}
+              </Badge>
             </CardContent>
           </Card>
 
