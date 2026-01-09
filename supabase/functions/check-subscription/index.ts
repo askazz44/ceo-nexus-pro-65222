@@ -85,18 +85,27 @@ serve(async (req) => {
     if (subscriptions.data.length > 0) {
       const subscription = subscriptions.data[0];
       subscriptionId = subscription.id;
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      productId = subscription.items.data[0].price.product as string;
       
-      // Map product ID to tier
-      const product = await stripe.products.retrieve(productId);
-      if (product.name.includes('Pro')) {
-        tier = 'pro';
-      } else if (product.name.includes('Business')) {
-        tier = 'business';
+      // Safely handle current_period_end
+      const periodEnd = subscription.current_period_end;
+      if (periodEnd && typeof periodEnd === 'number') {
+        subscriptionEnd = new Date(periodEnd * 1000).toISOString();
       }
       
-      logStep("Active subscription found", { subscriptionId, tier, endDate: subscriptionEnd });
+      const priceId = subscription.items.data[0]?.price?.id;
+      productId = subscription.items.data[0]?.price?.product as string;
+      
+      // Map price ID to tier (more reliable than product name)
+      const PRICE_TO_TIER: Record<string, string> = {
+        "price_1SDMO8Qq3sG1dhTUwHusboCN": "pro",        // pro_monthly
+        "price_1SDMOfQq3sG1dhTUzZ4VevXN": "pro",        // pro_yearly
+        "price_1SDPTdQq3sG1dhTUcfeVjrui": "business",   // business_monthly
+        "price_1SDPTtQq3sG1dhTUpw16XOy7": "business",   // business_yearly
+      };
+      
+      tier = PRICE_TO_TIER[priceId || ''] || 'pro';
+      
+      logStep("Active subscription found", { subscriptionId, tier, priceId, endDate: subscriptionEnd });
     } else {
       // Check for lifetime purchase (one-time payment)
       const charges = await stripe.charges.list({
