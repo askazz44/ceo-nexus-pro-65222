@@ -100,10 +100,15 @@ export function useTransactions({ projectId, page = 0, itemsPerPage = 20, filter
       .filter(t => t.type === 'expense')
       .reduce((sum, t) => sum + Number(t.amount), 0);
     
+    const totalSavings = allTransactions
+      .filter(t => t.type === 'savings')
+      .reduce((sum, t) => sum + Number(t.amount), 0);
+    
     return {
       totalIncome,
       totalExpense,
-      netProfit: totalIncome - totalExpense,
+      totalSavings,
+      netProfit: totalIncome - totalExpense - totalSavings,
       transactionCount: allTransactions.length,
     };
   }, [allTransactions]);

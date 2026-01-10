@@ -213,6 +213,7 @@ export type Database = {
           total_expense: number
           total_income: number
           total_projects: number
+          total_savings: number
         }[]
       }
       get_period_comparison: {
@@ -220,8 +221,10 @@ export type Database = {
         Returns: {
           current_expense: number
           current_income: number
+          current_savings: number
           previous_expense: number
           previous_income: number
+          previous_savings: number
         }[]
       }
       get_project_limit: {

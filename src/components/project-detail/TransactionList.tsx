@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
-import { TrendingUp, TrendingDown, Pencil, Trash2, Search } from 'lucide-react';
+import { TrendingUp, TrendingDown, Pencil, Trash2, Search, PiggyBank } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { useLocale } from '@/hooks/useLocale';
 import type { Transaction } from '@/types/project';
@@ -146,6 +146,8 @@ export function TransactionList({
                 <div className="flex items-center gap-4 flex-1">
                 {transaction.type === 'income' ? (
                     <TrendingUp className="h-5 w-5 text-income" />
+                  ) : transaction.type === 'savings' ? (
+                    <PiggyBank className="h-5 w-5 text-savings" />
                   ) : (
                     <TrendingDown className="h-5 w-5 text-expense" />
                   )}

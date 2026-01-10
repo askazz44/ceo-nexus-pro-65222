@@ -18,7 +18,7 @@ export interface ProjectWithTransactions extends Project {
 export interface Transaction {
   id: string;
   project_id: string;
-  type: 'income' | 'expense';
+  type: 'income' | 'expense' | 'savings';
   amount: number;
   category: string | null;
   note: string | null;
@@ -30,6 +30,7 @@ export interface Transaction {
 export interface ProjectStats {
   totalIncome: number;
   totalExpense: number;
+  totalSavings: number;
   netProfit: number;
   transactionCount: number;
 }
