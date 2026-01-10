@@ -63,6 +63,7 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
       const dateStr = format(date, "yyyy-MM-dd");
       let income = 0;
       let expense = 0;
+      let savings = 0;
 
       transactions.forEach((t) => {
         try {
@@ -73,12 +74,14 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
             const intervalMonth = format(date, "yyyy-MM");
             if (tMonth === intervalMonth) {
               if (t.type === "income") income += Number(t.amount || 0);
+              else if (t.type === "savings") savings += Number(t.amount || 0);
               else expense += Number(t.amount || 0);
             }
           } else {
             const tDate = format(parseISO(t.transaction_date), "yyyy-MM-dd");
             if (tDate === dateStr) {
               if (t.type === "income") income += Number(t.amount || 0);
+              else if (t.type === "savings") savings += Number(t.amount || 0);
               else expense += Number(t.amount || 0);
             }
           }
@@ -91,7 +94,8 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
         date: format(date, dateFormat, { locale: dLocale }),
         income,
         expense,
-        profit: income - expense
+        savings,
+        profit: income - expense - savings
       };
     });
   }, [transactions, timeRange, dLocale]);
@@ -139,12 +143,14 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
       const monthStr = format(month, "yyyy-MM");
       let income = 0;
       let expense = 0;
+      let savings = 0;
 
       transactions.forEach((t) => {
         if (!t.transaction_date) return;
         const tMonth = format(parseISO(t.transaction_date), "yyyy-MM");
         if (tMonth === monthStr) {
           if (t.type === "income") income += Number(t.amount || 0);
+          else if (t.type === "savings") savings += Number(t.amount || 0);
           else expense += Number(t.amount || 0);
         }
       });
@@ -152,7 +158,8 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
       return {
         month: format(month, "MMM", { locale: dLocale }),
         income,
-        expense
+        expense,
+        savings
       };
     });
   }, [transactions, dLocale]);
@@ -212,6 +219,7 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
               <Legend />
               <Line type="monotone" dataKey="income" stroke="hsl(var(--income))" strokeWidth={2} name={t('incomeLabel')} dot={{ fill: 'hsl(var(--income))' }} />
               <Line type="monotone" dataKey="expense" stroke="hsl(var(--expense))" strokeWidth={2} name={t('expenseLabel')} dot={{ fill: 'hsl(var(--expense))' }} />
+              <Line type="monotone" dataKey="savings" stroke="hsl(var(--savings))" strokeWidth={2} name={t('savingsLabel')} dot={{ fill: 'hsl(var(--savings))' }} />
               <Line type="monotone" dataKey="profit" stroke="hsl(var(--primary))" strokeWidth={2} name={t('profitLabel')} dot={{ fill: 'hsl(var(--primary))' }} />
             </LineChart>
           </ResponsiveContainer>
@@ -241,6 +249,7 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
               <Legend />
               <Bar dataKey="income" fill="hsl(var(--income))" name={t('incomeLabel')} radius={[4, 4, 0, 0]} />
               <Bar dataKey="expense" fill="hsl(var(--expense))" name={t('expenseLabel')} radius={[4, 4, 0, 0]} />
+              <Bar dataKey="savings" fill="hsl(var(--savings))" name={t('savingsLabel')} radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </CardContent>

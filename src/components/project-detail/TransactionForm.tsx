@@ -63,6 +63,7 @@ export function TransactionForm({ projectId, currency, editingTransaction, onSub
                 <SelectContent>
                   <SelectItem value="income">{t('income')}</SelectItem>
                   <SelectItem value="expense">{t('expense')}</SelectItem>
+                  <SelectItem value="savings">{t('savings')}</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

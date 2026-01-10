@@ -13,7 +13,7 @@ import { format } from 'date-fns';
 import { it, enUS } from 'date-fns/locale';
 
 export interface TransactionFiltersState {
-  type: 'all' | 'income' | 'expense';
+  type: 'all' | 'income' | 'expense' | 'savings';
   category: string;
   dateFrom: Date | undefined;
   dateTo: Date | undefined;
@@ -93,7 +93,7 @@ export function TransactionFilters({ filters, onFiltersChange, categories }: Tra
               <Label>{t('type')}</Label>
               <Select
                 value={filters.type}
-                onValueChange={(value: 'all' | 'income' | 'expense') => 
+                onValueChange={(value: 'all' | 'income' | 'expense' | 'savings') => 
                   onFiltersChange({ ...filters, type: value })
                 }
               >
@@ -104,6 +104,7 @@ export function TransactionFilters({ filters, onFiltersChange, categories }: Tra
                   <SelectItem value="all">{t('allTypes')}</SelectItem>
                   <SelectItem value="income">{t('entryType')}</SelectItem>
                   <SelectItem value="expense">{t('exitType')}</SelectItem>
+                  <SelectItem value="savings">{t('savingsType')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>

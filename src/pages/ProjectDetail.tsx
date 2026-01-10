@@ -56,7 +56,7 @@ export default function ProjectDetail() {
       const { error } = await supabase
         .from("transactions")
         .update({
-          type: data.type,
+          type: data.type as 'income' | 'expense',
           amount: data.amount,
           category: data.category || null,
           note: data.note || null,
@@ -83,7 +83,7 @@ export default function ProjectDetail() {
     } else {
       const { error } = await supabase.from("transactions").insert({
         project_id: id,
-        type: data.type,
+        type: data.type as 'income' | 'expense',
         amount: data.amount,
         category: data.category || null,
         note: data.note || null,

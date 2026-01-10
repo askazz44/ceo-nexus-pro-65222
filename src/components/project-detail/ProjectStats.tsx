@@ -1,5 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, PiggyBank } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
 import { useLocale } from '@/hooks/useLocale';
 import type { ProjectStats } from '@/types/project';
@@ -14,7 +14,7 @@ export function ProjectStatsCards({ stats, currency }: ProjectStatsProps) {
   const { formatCurrency } = useLocale();
 
   return (
-    <div className="grid gap-4 md:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">{t('totalIncome')}</CardTitle>
@@ -35,6 +35,18 @@ export function ProjectStatsCards({ stats, currency }: ProjectStatsProps) {
         <CardContent>
           <div className="text-2xl font-bold text-expense">
             {formatCurrency(stats.totalExpense, currency)}
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">{t('savings')}</CardTitle>
+          <PiggyBank className="h-4 w-4 text-savings" />
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold text-savings">
+            {formatCurrency(stats.totalSavings, currency)}
           </div>
         </CardContent>
       </Card>

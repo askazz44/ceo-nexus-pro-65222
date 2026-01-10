@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, TrendingUp, TrendingDown, Wallet, FolderKanban, Calendar, Filter, ArrowUp, ArrowDown } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, Wallet, FolderKanban, Calendar, Filter, ArrowUp, ArrowDown, PiggyBank } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -108,12 +108,15 @@ export default function Dashboard() {
   const filteredStats = useMemo(() => {
     let totalIncome = 0;
     let totalExpense = 0;
+    let totalSavings = 0;
     const currency = filteredProjects[0]?.currency || stats.currency;
 
     filteredProjects.forEach((project) => {
       project.transactions?.forEach((t: any) => {
         if (t.type === "income") {
           totalIncome += parseFloat(t.amount);
+        } else if (t.type === "savings") {
+          totalSavings += parseFloat(t.amount);
         } else {
           totalExpense += parseFloat(t.amount);
         }
@@ -124,7 +127,8 @@ export default function Dashboard() {
       totalProjects: filteredProjects.length,
       totalIncome,
       totalExpense,
-      netProfit: totalIncome - totalExpense,
+      totalSavings,
+      netProfit: totalIncome - totalExpense - totalSavings,
       currency,
     };
   }, [filteredProjects, stats.currency]);
@@ -154,6 +158,7 @@ export default function Dashboard() {
         const dateStr = format(date, "yyyy-MM-dd");
         let income = 0;
         let expense = 0;
+        let savings = 0;
 
         filteredProjects.forEach(project => {
         project.transactions?.forEach((t: any) => {
@@ -162,6 +167,7 @@ export default function Dashboard() {
             const tDate = format(parseISO(t.transaction_date), "yyyy-MM-dd");
             if (tDate === dateStr) {
               if (t.type === "income") income += parseFloat(t.amount || 0);
+              else if (t.type === "savings") savings += parseFloat(t.amount || 0);
               else expense += parseFloat(t.amount || 0);
             }
           } catch (error) {
@@ -174,7 +180,8 @@ export default function Dashboard() {
         date: timeRange === "year" ? format(date, "MMM", { locale: dLocale }) : format(date, "dd MMM", { locale: dLocale }),
         income,
         expense,
-        profit: income - expense
+        savings,
+        profit: income - expense - savings
       };
     });
   }, [filteredProjects, timeRange, dLocale]);
@@ -298,7 +305,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <Card className="card-hover border-l-4 border-l-primary/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t('activeProjects')}</CardTitle>
@@ -364,6 +371,24 @@ export default function Dashboard() {
           </CardContent>
         </Card>
 
+        <Card className="card-hover border-l-4 border-l-savings/50 bg-gradient-to-br from-card to-savings-light/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">{t('savings')}</CardTitle>
+            <div className="h-10 w-10 rounded-full bg-savings/10 flex items-center justify-center">
+              <PiggyBank className="h-5 w-5 text-savings" />
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-savings">
+              {new Intl.NumberFormat(numberLocale, {
+                style: 'currency',
+                currency: filteredStats.currency,
+              }).format(filteredStats.totalSavings)}
+            </div>
+            <p className="text-xs text-muted-foreground mt-1">{t('savingsLabel')}</p>
+          </CardContent>
+        </Card>
+
         <Card className={`card-hover border-l-4 ${filteredStats.netProfit >= 0 ? 'border-l-income/50 bg-gradient-to-br from-card to-income-light/20' : 'border-l-expense/50 bg-gradient-to-br from-card to-expense-light/20'}`}>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">{t('netProfit')}</CardTitle>
@@ -406,6 +431,7 @@ export default function Dashboard() {
                 <Legend />
                 <Line type="monotone" dataKey="income" stroke="hsl(var(--income))" strokeWidth={2} name={t('incomeLabel')} />
                 <Line type="monotone" dataKey="expense" stroke="hsl(var(--expense))" strokeWidth={2} name={t('expenseLabel')} />
+                <Line type="monotone" dataKey="savings" stroke="hsl(var(--savings))" strokeWidth={2} name={t('savingsLabel')} />
                 <Line type="monotone" dataKey="profit" stroke="hsl(var(--primary))" strokeWidth={2} name={t('profitLabel')} />
               </LineChart>
             </ResponsiveContainer>

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 export const transactionSchema = z.object({
-  type: z.enum(['income', 'expense']),
+  type: z.enum(['income', 'expense', 'savings']),
   amount: z.number()
     .positive('Importo deve essere positivo')
     .min(0.01, 'Minimo €0.01')
