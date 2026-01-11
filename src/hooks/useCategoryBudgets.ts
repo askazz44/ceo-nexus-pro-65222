@@ -63,10 +63,10 @@ export function useCategoryBudgets() {
 
       if (error) throw error;
 
-      // Aggregate by category
+      // Aggregate by category (normalize with trim for consistent matching)
       const categoryTotals: { [key: string]: number } = {};
       (transactions || []).forEach(t => {
-        const cat = t.category || 'Uncategorized';
+        const cat = (t.category || 'Uncategorized').trim();
         categoryTotals[cat] = (categoryTotals[cat] || 0) + Number(t.amount);
       });
 
@@ -88,11 +88,13 @@ export function useCategoryBudgets() {
 
   const budgetAlerts = useMemo((): BudgetAlert[] => {
     return budgets.map(budget => {
+      // Normalize: trim whitespace and compare case-insensitively
+      const budgetCategoryNormalized = budget.category.trim().toLowerCase();
       const expense = expensesByCategory.find(e => 
-        e.category.toLowerCase() === budget.category.toLowerCase()
+        e.category.trim().toLowerCase() === budgetCategoryNormalized
       );
       const currentSpent = expense?.amount || 0;
-      const percentage = (currentSpent / budget.budget_limit) * 100;
+      const percentage = budget.budget_limit > 0 ? (currentSpent / budget.budget_limit) * 100 : 0;
 
       return {
         category: budget.category,
