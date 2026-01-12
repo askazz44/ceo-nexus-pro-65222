@@ -1,4 +1,12 @@
 // Bank format detection and parsing utilities for international banks
+import DOMPurify from 'dompurify';
+
+// Security constants
+const MAX_NOTE_LENGTH = 500;
+const MAX_CATEGORY_LENGTH = 100;
+const MAX_AMOUNT = 999999999.99;
+const MIN_DATE = new Date('2000-01-01');
+const MAX_DATE_YEARS_AHEAD = 1;
 
 export interface BankFormat {
   name: string;
@@ -501,7 +509,7 @@ function findGenericColumns(headers: string[]): DetectedFormat['matchedColumns']
 }
 
 /**
- * Parse amount according to the detected format
+ * Parse amount according to the detected format with bounds checking
  */
 export function parseAmount(value: string, format: BankFormat): number | null {
   if (!value || typeof value !== 'string') return null;
@@ -525,11 +533,20 @@ export function parseAmount(value: string, format: BankFormat): number | null {
   cleaned = cleaned.replace(/[^0-9.\-]/g, '');
 
   const amount = parseFloat(cleaned);
-  return isNaN(amount) ? null : amount;
+  
+  if (isNaN(amount)) return null;
+  
+  // Bounds checking to prevent unreasonable values
+  if (Math.abs(amount) > MAX_AMOUNT) {
+    console.warn(`Amount ${amount} exceeds maximum allowed value of ${MAX_AMOUNT}`);
+    return null;
+  }
+  
+  return amount;
 }
 
 /**
- * Parse date according to the detected format
+ * Parse date according to the detected format with range validation
  */
 export function parseDate(value: string, format: BankFormat): string | null {
   if (!value || typeof value !== 'string') return null;
@@ -554,6 +571,8 @@ export function parseDate(value: string, format: BankFormat): string | null {
     patterns.push({ regex: /^(\d{1,2})\/(\d{1,2})\/(\d{4})/, groups: 'dmy' }); // D/M/YYYY or DD/MM/YYYY
   }
 
+  let parsedDate: Date | null = null;
+
   for (const { regex, groups } of patterns) {
     const match = cleaned.match(regex);
     if (match) {
@@ -573,15 +592,32 @@ export function parseDate(value: string, format: BankFormat): string | null {
       const numDay = parseInt(day);
 
       if (numYear >= 1900 && numYear <= 2100 && numMonth >= 1 && numMonth <= 12 && numDay >= 1 && numDay <= 31) {
-        return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+        parsedDate = new Date(numYear, numMonth - 1, numDay);
+        break;
       }
     }
   }
 
   // Try parsing as ISO date string or other formats
-  const date = new Date(cleaned);
-  if (!isNaN(date.getTime())) {
-    return date.toISOString().split('T')[0];
+  if (!parsedDate) {
+    const date = new Date(cleaned);
+    if (!isNaN(date.getTime())) {
+      parsedDate = date;
+    }
+  }
+
+  // Validate date range
+  if (parsedDate) {
+    const maxDate = new Date();
+    maxDate.setFullYear(maxDate.getFullYear() + MAX_DATE_YEARS_AHEAD);
+    
+    if (parsedDate < MIN_DATE || parsedDate > maxDate) {
+      console.warn(`Date ${parsedDate.toISOString()} is outside valid range`);
+      // Return current date as fallback for out-of-range dates
+      return new Date().toISOString().split('T')[0];
+    }
+    
+    return parsedDate.toISOString().split('T')[0];
   }
 
   return null;
@@ -615,11 +651,14 @@ export function determineTransactionType(
 /**
  * Sanitize string to prevent XSS and formula injection
  */
-export function sanitizeField(value: string | null): string | null {
+export function sanitizeField(value: string | null, maxLength: number = MAX_NOTE_LENGTH): string | null {
   if (!value) return value;
   
   // Trim whitespace
   let cleaned = value.trim();
+  
+  // Sanitize HTML to prevent XSS attacks
+  cleaned = DOMPurify.sanitize(cleaned, { ALLOWED_TAGS: [] });
   
   // Prefix dangerous characters with single quote to prevent Excel formula execution
   if (/^[=+\-@\t\r]/.test(cleaned)) {
@@ -627,9 +666,16 @@ export function sanitizeField(value: string | null): string | null {
   }
   
   // Limit length to prevent extremely long strings
-  if (cleaned.length > 500) {
-    cleaned = cleaned.substring(0, 500);
+  if (cleaned.length > maxLength) {
+    cleaned = cleaned.substring(0, maxLength);
   }
   
   return cleaned;
+}
+
+/**
+ * Sanitize category field with appropriate length limit
+ */
+export function sanitizeCategory(value: string | null): string | null {
+  return sanitizeField(value, MAX_CATEGORY_LENGTH);
 }

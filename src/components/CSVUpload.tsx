@@ -16,10 +16,14 @@ import {
   parseDate, 
   determineTransactionType, 
   sanitizeField,
+  sanitizeCategory,
   BANK_FORMATS,
   type CSVRow,
   type DetectedFormat 
 } from "@/lib/utils/bankFormatDetector";
+
+// Security constants
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 interface CSVUploadProps {
   projectId: string;
@@ -74,6 +78,16 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+
+    // Validate file size
+    if (file.size > MAX_FILE_SIZE) {
+      toast({
+        title: t('error'),
+        description: language === 'it' ? 'File troppo grande. Massimo 5MB.' : 'File too large. Maximum 5MB.',
+        variant: "destructive",
+      });
+      return;
+    }
 
     setFileName(file.name);
     setUploading(true);
@@ -252,10 +266,10 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
         }
       }
 
-      // Extract category
+      // Extract category with proper sanitization
       let category: string | null = null;
       if (detected.matchedColumns.category) {
-        category = sanitizeField(row[detected.matchedColumns.category]);
+        category = sanitizeCategory(row[detected.matchedColumns.category]);
       }
 
       transactions.push({
