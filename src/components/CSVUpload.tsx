@@ -146,15 +146,34 @@ export function CSVUpload({ projectId, onUploadComplete }: CSVUploadProps) {
             return;
           }
 
-          const { error } = await supabase
-            .from("transactions")
-            .insert(validatedTransactions);
+          // Use server-side edge function for secure import
+          const { data: importResult, error } = await supabase.functions.invoke('import-transactions', {
+            body: { 
+              projectId, 
+              transactions: validatedTransactions.map(t => ({
+                type: t.type,
+                amount: t.amount,
+                transaction_date: t.transaction_date,
+                category: t.category,
+                note: t.note,
+              }))
+            }
+          });
 
-          if (error) throw error;
+          if (error) {
+            throw new Error(error.message || 'Import failed');
+          }
 
+          if (importResult?.error) {
+            throw new Error(importResult.error);
+          }
+
+          const importedCount = importResult?.inserted || validatedTransactions.length;
+          const skippedCount = importResult?.skipped || validationErrors.length;
+          
           toast({
             title: t('importCompleted'),
-            description: `${validatedTransactions.length} ${t('transactionsImported')}${validationErrors.length > 0 ? ` (${validationErrors.length} ${language === 'it' ? 'ignorate' : 'skipped'})` : ''}`,
+            description: `${importedCount} ${t('transactionsImported')}${skippedCount > 0 ? ` (${skippedCount} ${language === 'it' ? 'ignorate' : 'skipped'})` : ''}`,
           });
           
           setOpen(false);
