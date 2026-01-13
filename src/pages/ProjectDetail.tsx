@@ -9,16 +9,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Loader2, MoreVertical, Trash2 } from "lucide-react";
+import { ArrowLeft, Plus, Loader2, MoreVertical, Trash2, FileSpreadsheet } from "lucide-react";
 import { CSVUpload } from "@/components/CSVUpload";
 import { MonthlyReportDownload } from "@/components/MonthlyReportDownload";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { ProjectStatsCards } from "@/components/project-detail/ProjectStats";
 import { TransactionForm } from "@/components/project-detail/TransactionForm";
 import { TransactionList } from "@/components/project-detail/TransactionList";
 import { ProjectCharts } from "@/components/project-detail/ProjectCharts";
 import { defaultFilters, TransactionFiltersState } from "@/components/project-detail/TransactionFilters";
+import { exportTransactionsToCSV } from "@/lib/utils/csvExport";
 import type { TransactionFormData } from "@/lib/schemas/transactionSchema";
 import type { Transaction } from "@/types/project";
 
@@ -195,6 +196,14 @@ export default function ProjectDetail() {
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
+            <DropdownMenuItem 
+              onClick={() => exportTransactionsToCSV(allTransactions, project.name)}
+              disabled={allTransactions.length === 0}
+            >
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              {language === 'it' ? 'Esporta CSV' : 'Export CSV'}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => setDeleteProjectDialogOpen(true)} className="text-destructive">
               <Trash2 className="mr-2 h-4 w-4" />
               {t('deleteProject')}
