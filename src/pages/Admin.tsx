@@ -4,10 +4,17 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { useTranslation } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Users, Shield, Download } from "lucide-react";
+import { Loader2, Users, Shield, Download, FileSpreadsheet } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { exportUserDatabase, downloadDatabaseExport } from "@/lib/utils/databaseExport";
+import { exportDatabaseToCSV } from "@/lib/utils/csvExport";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Admin() {
   const { toast } = useToast();
@@ -58,11 +65,16 @@ export default function Admin() {
     setLoading(false);
   };
 
-  const handleExportDatabase = async () => {
+  const handleExportDatabase = async (format: 'json' | 'csv' = 'json') => {
     try {
       setExporting(true);
       const data = await exportUserDatabase();
-      downloadDatabaseExport(data);
+      
+      if (format === 'csv') {
+        exportDatabaseToCSV(data);
+      } else {
+        downloadDatabaseExport(data);
+      }
       
       toast({
         title: t('backupCompleted'),
@@ -143,19 +155,33 @@ export default function Admin() {
               <p className="text-muted-foreground">{t('userManagement')}</p>
             </div>
           </div>
-          <Button onClick={handleExportDatabase} disabled={exporting} variant="outline">
-            {exporting ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('exporting')}
-              </>
-            ) : (
-              <>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button disabled={exporting} variant="outline">
+                {exporting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    {t('exporting')}
+                  </>
+                ) : (
+                  <>
+                    <Download className="mr-2 h-4 w-4" />
+                    {t('backupDatabase')}
+                  </>
+                )}
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => handleExportDatabase('json')}>
                 <Download className="mr-2 h-4 w-4" />
-                {t('backupDatabase')}
-              </>
-            )}
-          </Button>
+                {language === 'it' ? 'Esporta JSON' : 'Export JSON'}
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleExportDatabase('csv')}>
+                <FileSpreadsheet className="mr-2 h-4 w-4" />
+                {language === 'it' ? 'Esporta CSV (Excel)' : 'Export CSV (Excel)'}
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
       <div className="grid gap-4 md:grid-cols-3">

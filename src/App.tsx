@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { RouteErrorBoundary } from "./components/RouteErrorBoundary";
 import { OfflineIndicator } from "./components/OfflineIndicator";
 import AppLayout from "./components/AppLayout";
 import Dashboard from "./pages/Dashboard";
@@ -13,6 +14,7 @@ import Projects from "./pages/Projects";
 import ProjectDetail from "./pages/ProjectDetail";
 import Admin from "./pages/Admin";
 import Auth from "./pages/Auth";
+import ResetPassword from "./pages/ResetPassword";
 import Subscription from "./pages/Subscription";
 import SubscriptionSuccess from "./pages/SubscriptionSuccess";
 import SubscriptionCanceled from "./pages/SubscriptionCanceled";
@@ -72,19 +74,52 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/install" element={<Install />} />
             
             <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/projects" element={<Projects />} />
-              <Route path="/project/:id" element={<ProjectDetail />} />
-              <Route path="/subscription" element={<Subscription />} />
+              <Route path="/dashboard" element={
+                <RouteErrorBoundary routeName="Dashboard" fallbackPath="/">
+                  <Dashboard />
+                </RouteErrorBoundary>
+              } />
+              <Route path="/projects" element={
+                <RouteErrorBoundary routeName="Projects" fallbackPath="/dashboard">
+                  <Projects />
+                </RouteErrorBoundary>
+              } />
+              <Route path="/project/:id" element={
+                <RouteErrorBoundary routeName="Project Detail" fallbackPath="/projects">
+                  <ProjectDetail />
+                </RouteErrorBoundary>
+              } />
+              <Route path="/subscription" element={
+                <RouteErrorBoundary routeName="Subscription" fallbackPath="/dashboard">
+                  <Subscription />
+                </RouteErrorBoundary>
+              } />
               <Route path="/subscription/success" element={<SubscriptionSuccess />} />
               <Route path="/subscription/canceled" element={<SubscriptionCanceled />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/budgets" element={<Budgets />} />
-              <Route path="/comparison" element={<ComparativeAnalysis />} />
+              <Route path="/settings" element={
+                <RouteErrorBoundary routeName="Settings" fallbackPath="/dashboard">
+                  <Settings />
+                </RouteErrorBoundary>
+              } />
+              <Route path="/admin" element={
+                <RouteErrorBoundary routeName="Admin" fallbackPath="/dashboard">
+                  <Admin />
+                </RouteErrorBoundary>
+              } />
+              <Route path="/budgets" element={
+                <RouteErrorBoundary routeName="Budgets" fallbackPath="/dashboard">
+                  <Budgets />
+                </RouteErrorBoundary>
+              } />
+              <Route path="/comparison" element={
+                <RouteErrorBoundary routeName="Comparison" fallbackPath="/dashboard">
+                  <ComparativeAnalysis />
+                </RouteErrorBoundary>
+              } />
             </Route>
 
             <Route path="*" element={<NotFound />} />

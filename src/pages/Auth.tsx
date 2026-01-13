@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -6,17 +6,26 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authSignUpSchema, authSignInSchema, type AuthSignUpFormData, type AuthSignInFormData } from "@/lib/schemas/passwordSchema";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useTranslation } from "@/lib/i18n";
+import { z } from "zod";
+
+const forgotPasswordSchema = z.object({
+  email: z.string().email("Invalid email address"),
+});
+
+type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const isIt = language === 'it';
   
   const signUpForm = useForm<AuthSignUpFormData>({
     resolver: zodResolver(authSignUpSchema),
@@ -32,6 +41,12 @@ export default function Auth() {
     defaultValues: {
       email: "",
       password: "",
+    },
+  });
+  const forgotPasswordForm = useForm<ForgotPasswordFormData>({
+    resolver: zodResolver(forgotPasswordSchema),
+    defaultValues: {
+      email: "",
     },
   });
 
@@ -120,6 +135,102 @@ export default function Auth() {
     }
   };
 
+  const handleForgotPassword = async (data: ForgotPasswordFormData) => {
+    try {
+      const redirectUrl = `${window.location.origin}/reset-password`;
+      
+      const { error } = await supabase.auth.resetPasswordForEmail(data.email, {
+        redirectTo: redirectUrl,
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: isIt ? "Email inviata" : "Email sent",
+        description: isIt 
+          ? "Controlla la tua email per il link di reset password"
+          : "Check your email for the password reset link",
+      });
+      
+      setShowForgotPassword(false);
+    } catch (error: any) {
+      toast({
+        title: t('error'),
+        description: error.message,
+        variant: "destructive",
+      });
+    }
+  };
+
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-accent/20 p-4 relative overflow-hidden">
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-3xl animate-pulse"></div>
+          <div className="absolute bottom-20 right-10 w-72 h-72 bg-accent/30 rounded-full mix-blend-multiply filter blur-3xl animate-pulse delay-1000"></div>
+        </div>
+        
+        <Card className="w-full max-w-md shadow-xl animate-fade-up glass">
+          <CardHeader className="space-y-1 text-center">
+            <div className="mx-auto mb-2 h-12 w-12 rounded-full bg-gradient-primary flex items-center justify-center shadow-glow">
+              <span className="text-2xl font-bold text-primary-foreground">GF</span>
+            </div>
+            <CardTitle className="text-2xl font-bold">
+              {isIt ? "Recupera Password" : "Forgot Password"}
+            </CardTitle>
+            <CardDescription>
+              {isIt 
+                ? "Inserisci la tua email per ricevere il link di reset"
+                : "Enter your email to receive the reset link"
+              }
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...forgotPasswordForm}>
+              <form onSubmit={forgotPasswordForm.handleSubmit(handleForgotPassword)} className="space-y-4">
+                <FormField
+                  control={forgotPasswordForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>{t('email')}</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder={t('emailPlaceholder')}
+                          className="glass-hover"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button 
+                  type="submit" 
+                  className="w-full btn-glow" 
+                  disabled={forgotPasswordForm.formState.isSubmitting}
+                >
+                  {forgotPasswordForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                  {isIt ? "Invia Link Reset" : "Send Reset Link"}
+                </Button>
+                <Button 
+                  type="button"
+                  variant="ghost" 
+                  className="w-full" 
+                  onClick={() => setShowForgotPassword(false)}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  {isIt ? "Torna al login" : "Back to login"}
+                </Button>
+              </form>
+            </Form>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-primary/5 to-accent/20 p-4 relative overflow-hidden">
       {/* Background decorative elements */}
@@ -192,6 +303,14 @@ export default function Auth() {
                   >
                     {signInForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                     {t('signIn')}
+                  </Button>
+                  <Button 
+                    type="button"
+                    variant="link" 
+                    className="w-full text-sm text-muted-foreground hover:text-primary"
+                    onClick={() => setShowForgotPassword(true)}
+                  >
+                    {isIt ? "Password dimenticata?" : "Forgot password?"}
                   </Button>
                 </form>
               </Form>
