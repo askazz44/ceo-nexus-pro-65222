@@ -5,9 +5,10 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Languages, Moon, Sun, User, Bell } from "lucide-react";
+import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Language, getLanguage, setLanguage, useTranslation } from "@/lib/i18n";
+import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 
 export default function Settings() {
   const { toast } = useToast();
@@ -206,6 +207,26 @@ export default function Settings() {
             <Mail className="mr-2 h-4 w-4" />
             {t('sendFeedback')}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Danger Zone */}
+      <Card className="card-hover border-destructive/50">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+              <AlertTriangle className="h-4 w-4 text-destructive" />
+            </div>
+            <div>
+              <CardTitle className="text-destructive">{t('dangerZone')}</CardTitle>
+              <CardDescription>
+                {t('dangerZoneDesc')}
+              </CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <DeleteAccountDialog />
         </CardContent>
       </Card>
 

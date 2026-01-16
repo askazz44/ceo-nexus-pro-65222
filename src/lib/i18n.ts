@@ -365,6 +365,31 @@ export const translations = {
     detailedComparison: 'Confronto Dettagliato',
     avgTransaction: 'Media Transazione',
     comparison: 'Confronto',
+    
+    // Delete Account
+    deleteAccount: 'Elimina Account',
+    deleteAccountTitle: 'Elimina il tuo account',
+    deleteAccountWarning: 'Questa azione è irreversibile. Tutti i tuoi dati verranno eliminati permanentemente.',
+    deleteAccountItem1: 'Tutti i tuoi progetti verranno eliminati',
+    deleteAccountItem2: 'Tutte le transazioni verranno rimosse',
+    deleteAccountItem3: 'Il tuo account non potrà essere recuperato',
+    typeToConfirm: 'Digita per confermare:',
+    typeConfirmPhrase: 'Digita la parola corretta per confermare',
+    accountDeleted: 'Account eliminato',
+    accountDeletedSuccess: 'Il tuo account è stato eliminato con successo',
+    deleteAccountError: 'Errore durante l\'eliminazione dell\'account',
+    deleteAccountPermanently: 'Elimina definitivamente',
+    notAuthenticated: 'Non sei autenticato',
+    dangerZone: 'Zona Pericolosa',
+    dangerZoneDesc: 'Azioni irreversibili per il tuo account',
+    
+    // Empty States
+    noDataYet: 'Nessun dato ancora',
+    startAddingData: 'Inizia ad aggiungere dati per vedere le statistiche',
+    noDashboardData: 'Nessun dato nella dashboard',
+    createProjectToStart: 'Crea un progetto e aggiungi transazioni per vedere le statistiche',
+    noTransactionsEmpty: 'Nessuna transazione',
+    addFirstTransaction: 'Aggiungi la tua prima transazione per iniziare a tracciare',
   },
   en: {
     // Navigation
@@ -728,6 +753,31 @@ export const translations = {
     detailedComparison: 'Detailed Comparison',
     avgTransaction: 'Avg Transaction',
     comparison: 'Comparison',
+    
+    // Delete Account
+    deleteAccount: 'Delete Account',
+    deleteAccountTitle: 'Delete your account',
+    deleteAccountWarning: 'This action is irreversible. All your data will be permanently deleted.',
+    deleteAccountItem1: 'All your projects will be deleted',
+    deleteAccountItem2: 'All transactions will be removed',
+    deleteAccountItem3: 'Your account cannot be recovered',
+    typeToConfirm: 'Type to confirm:',
+    typeConfirmPhrase: 'Type the correct word to confirm',
+    accountDeleted: 'Account deleted',
+    accountDeletedSuccess: 'Your account has been deleted successfully',
+    deleteAccountError: 'Error deleting account',
+    deleteAccountPermanently: 'Delete permanently',
+    notAuthenticated: 'Not authenticated',
+    dangerZone: 'Danger Zone',
+    dangerZoneDesc: 'Irreversible actions for your account',
+    
+    // Empty States
+    noDataYet: 'No data yet',
+    startAddingData: 'Start adding data to see statistics',
+    noDashboardData: 'No dashboard data',
+    createProjectToStart: 'Create a project and add transactions to see statistics',
+    noTransactionsEmpty: 'No transactions',
+    addFirstTransaction: 'Add your first transaction to start tracking',
   },
 };
 

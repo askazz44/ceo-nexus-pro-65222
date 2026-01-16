@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2, TrendingUp, TrendingDown, Wallet, FolderKanban, Calendar, Filter, ArrowUp, ArrowDown, PiggyBank } from "lucide-react";
+import { Loader2, TrendingUp, TrendingDown, Wallet, FolderKanban, Calendar, Filter, ArrowUp, ArrowDown, PiggyBank, BarChart3 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from "recharts";
@@ -10,9 +10,11 @@ import { enUS, it as itLocale } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { useTranslation } from "@/lib/i18n";
 import { BudgetAlerts } from "@/components/budgets/BudgetAlerts";
 import { useCategoryBudgets } from "@/hooks/useCategoryBudgets";
+import { EmptyState } from "@/components/EmptyState";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -262,6 +264,33 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+      </div>
+    );
+  }
+
+  // Empty state when no projects exist
+  if (allProjects.length === 0) {
+    return (
+      <div className="space-y-6 animate-fade-in">
+        <div className="relative">
+          <div className="absolute -top-20 left-0 w-64 h-64 bg-primary/10 rounded-full mix-blend-multiply filter blur-3xl"></div>
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              {t('globalDashboard')}
+            </h1>
+            <p className="text-muted-foreground mt-2">{t('overviewProjects')}</p>
+          </div>
+        </div>
+        
+        <EmptyState
+          icon={BarChart3}
+          title={t('noDashboardData')}
+          description={t('createProjectToStart')}
+          action={{
+            label: t('createFirstProject'),
+            onClick: () => navigate('/projects'),
+          }}
+        />
       </div>
     );
   }
