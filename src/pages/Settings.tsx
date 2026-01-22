@@ -9,6 +9,7 @@ import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle } from "lucide-re
 import { useToast } from "@/hooks/use-toast";
 import { Language, getLanguage, setLanguage, useTranslation } from "@/lib/i18n";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
+import { ReferralCard } from "@/components/ReferralCard";
 
 export default function Settings() {
   const { toast } = useToast();
@@ -69,6 +70,9 @@ export default function Settings() {
           {t('managePreferences')}
         </p>
       </div>
+
+      {/* Referral Card */}
+      <ReferralCard />
 
       {/* Account Settings */}
       <Card className="card-hover">

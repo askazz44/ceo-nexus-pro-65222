@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Gift } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { authSignUpSchema, authSignInSchema, type AuthSignUpFormData, type AuthSignInFormData } from "@/lib/schemas/passwordSchema";
@@ -22,9 +22,11 @@ type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export default function Auth() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const { t, language } = useTranslation();
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [referralCode, setReferralCode] = useState(searchParams.get('ref') || '');
   const isIt = language === 'it';
   
   const signUpForm = useForm<AuthSignUpFormData>({
@@ -94,6 +96,20 @@ export default function Auth() {
           });
 
         if (profileError) throw profileError;
+
+        // Apply referral code if provided
+        if (referralCode.trim()) {
+          // Type assertion needed since apply_referral is a new function
+          const { error: referralError } = await (supabase.rpc as any)('apply_referral', {
+            referral_code_input: referralCode.trim().toUpperCase(),
+            new_user_id: signUpData.user.id,
+          });
+
+          if (referralError) {
+            console.log('Referral code not valid or error:', referralError);
+            // Don't block signup, just log the error
+          }
+        }
       }
 
       toast({
@@ -372,6 +388,26 @@ export default function Auth() {
                       </FormItem>
                     )}
                   />
+                  {/* Referral Code Field */}
+                  <div className="space-y-2">
+                    <FormLabel className="flex items-center gap-2">
+                      <Gift className="h-4 w-4 text-primary" />
+                      {t('referralCodeLabel')}
+                    </FormLabel>
+                    <Input
+                      type="text"
+                      placeholder={t('referralCodePlaceholder')}
+                      className="glass-hover uppercase"
+                      value={referralCode}
+                      onChange={(e) => setReferralCode(e.target.value.toUpperCase())}
+                      maxLength={8}
+                    />
+                    {referralCode && (
+                      <p className="text-xs text-muted-foreground">
+                        {isIt ? 'Il tuo amico riceverà credito quando ti registri!' : 'Your friend will get credit when you sign up!'}
+                      </p>
+                    )}
+                  </div>
                   <Button 
                     type="submit" 
                     className="w-full btn-glow" 
