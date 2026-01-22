@@ -206,8 +206,12 @@ export default function Dashboard() {
     return filteredProjects.map(project => {
       const projectIncome = project.transactions
         ?.filter((t: any) => t.type === "income")
-        .reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0) || 0;
-      const target = parseFloat(project.target_revenue || 0);
+        .reduce((sum: number, t: any) => {
+          const amount = Number(t.amount);
+          return sum + (isNaN(amount) ? 0 : amount);
+        }, 0) || 0;
+      const targetValue = Number(project.target_revenue);
+      const target = isNaN(targetValue) ? 0 : targetValue;
       const progress = target > 0 ? (projectIncome / target) * 100 : 0;
 
       return { ...project, projectIncome, progress, target };
@@ -555,10 +559,16 @@ export default function Dashboard() {
               {filteredProjects.slice(0, 5).map((project) => {
                 const projectIncome = project.transactions
                   ?.filter((t: any) => t.type === "income")
-                  .reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0) || 0;
+                  .reduce((sum: number, t: any) => {
+                    const amount = Number(t.amount);
+                    return sum + (isNaN(amount) ? 0 : amount);
+                  }, 0) || 0;
                 const projectExpense = project.transactions
                   ?.filter((t: any) => t.type === "expense")
-                  .reduce((sum: number, t: any) => sum + parseFloat(t.amount), 0) || 0;
+                  .reduce((sum: number, t: any) => {
+                    const amount = Number(t.amount);
+                    return sum + (isNaN(amount) ? 0 : amount);
+                  }, 0) || 0;
                 const projectProfit = projectIncome - projectExpense;
 
                 return (

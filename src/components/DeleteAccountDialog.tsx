@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -19,6 +19,7 @@ import { useTranslation } from "@/lib/i18n";
 import { Loader2, Trash2, AlertTriangle } from "lucide-react";
 
 export function DeleteAccountDialog() {
+  const navigate = useNavigate();
   const { toast } = useToast();
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -66,9 +67,9 @@ export function DeleteAccountDialog() {
         description: t('accountDeletedSuccess'),
       });
 
-      // Sign out and redirect
+      // Sign out and redirect using React Router
       await supabase.auth.signOut();
-      window.location.href = '/auth';
+      navigate('/auth', { replace: true });
     } catch (error: any) {
       console.error('Delete account error:', error);
       toast({
