@@ -14,12 +14,12 @@ export async function exportUserDatabase(): Promise<DatabaseExport> {
     throw new Error("User not authenticated");
   }
 
-  // Fetch user profile
+  // Fetch user profile (use maybeSingle to handle missing profiles gracefully)
   const { data: profile } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Fetch all user projects
   const { data: projects } = await supabase

@@ -34,9 +34,10 @@ export function ReferralCard() {
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
+      if (!data) return; // Profile not ready yet
       
       // Type assertion for new columns that may not be in generated types
       const profileData = data as unknown as {
