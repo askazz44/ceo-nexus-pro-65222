@@ -390,6 +390,26 @@ export const translations = {
     createProjectToStart: 'Crea un progetto e aggiungi transazioni per vedere le statistiche',
     noTransactionsEmpty: 'Nessuna transazione',
     addFirstTransaction: 'Aggiungi la tua prima transazione per iniziare a tracciare',
+    
+    // Referral
+    referralProgram: 'Invita un Amico',
+    referralDescription: 'Invita 3 amici e ottieni 1 mese Pro gratis!',
+    yourReferralCode: 'Il tuo codice referral',
+    codeCopied: 'Codice copiato!',
+    shareWithFriends: 'Condividilo con i tuoi amici',
+    copyFailed: 'Impossibile copiare il codice',
+    linkCopied: 'Link copiato!',
+    referralShareText: 'Prova GainFlow per gestire le tue finanze! Usa il mio codice:',
+    friendsInvited: 'Amici invitati',
+    invite3Friends: 'Invita 3 amici per sbloccare 1 mese Pro gratis',
+    congratsProUnlocked: '🎉 Congratulazioni! Hai sbloccato 1 mese Pro gratis!',
+    referralReward: 'Premi Referral',
+    referralBenefit1: 'Tu ottieni 1 mese Pro gratis dopo 3 inviti',
+    referralBenefit2: 'I tuoi amici iniziano con tutti i vantaggi',
+    rewardUnlocked: 'Premio Sbloccato!',
+    referralCodeLabel: 'Codice Referral (opzionale)',
+    referralCodePlaceholder: 'es. ABC123XY',
+    invalidReferralCode: 'Codice referral non valido',
   },
   en: {
     // Navigation
@@ -778,6 +798,26 @@ export const translations = {
     createProjectToStart: 'Create a project and add transactions to see statistics',
     noTransactionsEmpty: 'No transactions',
     addFirstTransaction: 'Add your first transaction to start tracking',
+    
+    // Referral
+    referralProgram: 'Invite a Friend',
+    referralDescription: 'Invite 3 friends and get 1 month Pro free!',
+    yourReferralCode: 'Your referral code',
+    codeCopied: 'Code copied!',
+    shareWithFriends: 'Share it with your friends',
+    copyFailed: 'Unable to copy code',
+    linkCopied: 'Link copied!',
+    referralShareText: 'Try GainFlow to manage your finances! Use my code:',
+    friendsInvited: 'Friends invited',
+    invite3Friends: 'Invite 3 friends to unlock 1 month Pro free',
+    congratsProUnlocked: '🎉 Congratulations! You unlocked 1 month Pro free!',
+    referralReward: 'Referral Rewards',
+    referralBenefit1: 'You get 1 month Pro free after 3 invites',
+    referralBenefit2: 'Your friends start with all benefits',
+    rewardUnlocked: 'Reward Unlocked!',
+    referralCodeLabel: 'Referral Code (optional)',
+    referralCodePlaceholder: 'e.g. ABC123XY',
+    invalidReferralCode: 'Invalid referral code',
   },
 };
 
