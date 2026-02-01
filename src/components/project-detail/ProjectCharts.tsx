@@ -102,10 +102,32 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
 
   const uncategorizedLabel = t('uncategorized');
 
+  // Filter transactions based on selected time range
+  const filteredTransactions = useMemo(() => {
+    const now = new Date();
+    let startDate: Date;
+    
+    if (timeRange === "week") {
+      startDate = startOfWeek(now, { weekStartsOn: 1 });
+    } else if (timeRange === "month") {
+      startDate = startOfMonth(now);
+    } else if (timeRange === "3months") {
+      startDate = startOfMonth(subMonths(now, 2));
+    } else {
+      startDate = new Date(now.getFullYear(), 0, 1);
+    }
+    
+    return transactions.filter(tx => {
+      if (!tx.transaction_date) return false;
+      const txDate = parseISO(tx.transaction_date);
+      return txDate >= startDate && txDate <= now;
+    });
+  }, [transactions, timeRange]);
+
   const categoryExpenseData = useMemo(() => {
     const categories: { [key: string]: number } = {};
     
-    transactions.forEach((tx) => {
+    filteredTransactions.forEach((tx) => {
       if (tx.type === "expense") {
         const cat = tx.category || uncategorizedLabel;
         categories[cat] = (categories[cat] || 0) + Number(tx.amount);
@@ -115,12 +137,12 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
     return Object.entries(categories)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  }, [transactions, uncategorizedLabel]);
+  }, [filteredTransactions, uncategorizedLabel]);
 
   const categoryIncomeData = useMemo(() => {
     const categories: { [key: string]: number } = {};
     
-    transactions.forEach((tx) => {
+    filteredTransactions.forEach((tx) => {
       if (tx.type === "income") {
         const cat = tx.category || uncategorizedLabel;
         categories[cat] = (categories[cat] || 0) + Number(tx.amount);
@@ -130,7 +152,7 @@ export function ProjectCharts({ transactions, currency }: ProjectChartsProps) {
     return Object.entries(categories)
       .map(([name, value]) => ({ name, value }))
       .sort((a, b) => b.value - a.value);
-  }, [transactions, uncategorizedLabel]);
+  }, [filteredTransactions, uncategorizedLabel]);
 
   const monthlyComparisonData = useMemo(() => {
     const now = new Date();
