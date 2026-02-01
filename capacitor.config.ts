@@ -13,6 +13,13 @@ const config: CapacitorConfig = {
     allowMixedContent: true,
     backgroundColor: '#8B5CF6',
   },
+  ios: {
+    backgroundColor: '#8B5CF6',
+    contentInset: 'automatic',
+    scrollEnabled: true,
+    allowsLinkPreview: false,
+    preferredContentMode: 'mobile',
+  },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
@@ -24,6 +31,10 @@ const config: CapacitorConfig = {
     StatusBar: {
       backgroundColor: '#8B5CF6',
       style: 'LIGHT',
+    },
+    Keyboard: {
+      resize: 'body',
+      resizeOnFullScreen: true,
     },
   },
 };

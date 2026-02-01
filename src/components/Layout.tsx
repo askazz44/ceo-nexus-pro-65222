@@ -70,8 +70,8 @@ export default function Layout() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5">
-      <header className="sticky top-0 z-50 w-full border-b bg-card/80 backdrop-blur-xl supports-[backdrop-filter]:bg-card/60 shadow-sm">
+    <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pt-[env(safe-area-inset-top)]">
+      <header className="sticky top-0 z-50 w-full border-b bg-card/95 backdrop-blur-sm shadow-sm">
         <div className="container flex h-16 items-center">
           <div className="mr-4 flex">
             <Link to="/" className="mr-6 flex items-center space-x-2 group">
@@ -88,10 +88,10 @@ export default function Layout() {
               <Link
                 key={item.path}
                 to={item.path}
-                className={`relative px-4 py-2 rounded-lg transition-all duration-300 ${
+                className={`relative px-4 py-3 rounded-lg transition-colors touch-manipulation select-none ${
                   location.pathname === item.path
                     ? "bg-primary/10 text-primary font-semibold shadow-sm"
-                    : "text-muted-foreground hover:text-primary hover:bg-accent"
+                    : "text-muted-foreground active:bg-accent"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -119,7 +119,7 @@ export default function Layout() {
           </div>
         </div>
       </header>
-      <main className="container py-6 min-h-[calc(100vh-4rem-5rem)]">
+      <main className="container py-6 min-h-[calc(100vh-4rem-5rem)] pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
         <Outlet />
       </main>
       <Footer />
