@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Loader2, TrendingUp, TrendingDown, Wallet, FolderKanban, Calendar, Filter, ArrowUp, ArrowDown, PiggyBank, BarChart3 } from "lucide-react";
@@ -15,6 +15,7 @@ import { useTranslation } from "@/lib/i18n";
 import { BudgetAlerts } from "@/components/budgets/BudgetAlerts";
 import { useCategoryBudgets } from "@/hooks/useCategoryBudgets";
 import { EmptyState } from "@/components/EmptyState";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -39,13 +40,31 @@ export default function Dashboard() {
   const [selectedProject, setSelectedProject] = useState<string>("all");
   const [timeRange, setTimeRange] = useState<"week" | "month" | "year">("month");
   
-  // Budget alerts
+  // Budget alerts and notifications
   const { budgetAlerts } = useCategoryBudgets();
   const criticalAlerts = budgetAlerts.filter(a => a.percentage >= 80);
+  const { canNotify, showBudgetAlert } = useNotifications();
+  const notifiedBudgetsRef = useRef<Set<string>>(new Set());
 
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  // Send notifications for critical budget alerts
+  useEffect(() => {
+    if (!canNotify || budgetAlerts.length === 0) return;
+
+    budgetAlerts.forEach((alert) => {
+      // Only notify once per category per session
+      const notificationKey = `${alert.category}-${alert.percentage >= 100 ? 'exceeded' : 'warning'}`;
+      
+      if (alert.percentage >= 80 && !notifiedBudgetsRef.current.has(notificationKey)) {
+        notifiedBudgetsRef.current.add(notificationKey);
+        const overspent = alert.currentSpent - alert.budgetLimit;
+        showBudgetAlert(alert.category, alert.percentage, alert.currency, overspent > 0 ? overspent : undefined);
+      }
+    });
+  }, [budgetAlerts, canNotify, showBudgetAlert]);
 
   const loadDashboardData = async () => {
     try {

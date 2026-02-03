@@ -410,6 +410,19 @@ export const translations = {
     referralCodeLabel: 'Codice Referral (opzionale)',
     referralCodePlaceholder: 'es. ABC123XY',
     invalidReferralCode: 'Codice referral non valido',
+    
+    // Push Notifications
+    budgetExceeded: 'Budget Superato!',
+    budgetWarning: 'Attenzione Budget',
+    categoryBudgetExceeded: 'Hai superato il budget "{category}" di {amount}',
+    categoryBudgetWarning: 'Hai raggiunto il {percentage}% del budget "{category}"',
+    enableNotifications: 'Attiva Notifiche',
+    notificationsEnabled: 'Notifiche attivate',
+    notificationsBlocked: 'Notifiche bloccate',
+    enableNotificationsDesc: 'Ricevi avvisi quando superi un budget',
+    notificationPermissionDenied: 'Permesso notifiche negato',
+    pushNotifications: 'Notifiche Push',
+    budgetAlertNotifications: 'Avvisi budget in tempo reale',
   },
   en: {
     // Navigation
@@ -818,6 +831,19 @@ export const translations = {
     referralCodeLabel: 'Referral Code (optional)',
     referralCodePlaceholder: 'e.g. ABC123XY',
     invalidReferralCode: 'Invalid referral code',
+    
+    // Push Notifications
+    budgetExceeded: 'Budget Exceeded!',
+    budgetWarning: 'Budget Warning',
+    categoryBudgetExceeded: 'You exceeded the "{category}" budget by {amount}',
+    categoryBudgetWarning: 'You reached {percentage}% of your "{category}" budget',
+    enableNotifications: 'Enable Notifications',
+    notificationsEnabled: 'Notifications enabled',
+    notificationsBlocked: 'Notifications blocked',
+    enableNotificationsDesc: 'Get alerts when you exceed a budget',
+    notificationPermissionDenied: 'Notification permission denied',
+    pushNotifications: 'Push Notifications',
+    budgetAlertNotifications: 'Real-time budget alerts',
   },
 };
 

@@ -5,11 +5,12 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle } from "lucide-react";
+import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle, BellRing } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Language, getLanguage, setLanguage, useTranslation } from "@/lib/i18n";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 import { ReferralCard } from "@/components/ReferralCard";
+import { useNotifications } from "@/hooks/useNotifications";
 
 export default function Settings() {
   const { toast } = useToast();
@@ -18,6 +19,7 @@ export default function Settings() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const { permission, isSupported, requestPermission, canNotify } = useNotifications();
 
   useEffect(() => {
     // Load user
@@ -168,7 +170,43 @@ export default function Settings() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
+          {/* Push Notifications */}
+          {isSupported && (
+            <>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <BellRing className="h-5 w-5 text-primary" />
+                  <div>
+                    <Label className="text-sm font-medium">
+                      {t('pushNotifications')}
+                    </Label>
+                    <p className="text-sm text-muted-foreground">
+                      {t('budgetAlertNotifications')}
+                    </p>
+                  </div>
+                </div>
+                {permission === 'denied' ? (
+                  <span className="text-sm text-muted-foreground">{t('notificationsBlocked')}</span>
+                ) : (
+                  <Switch 
+                    checked={canNotify}
+                    onCheckedChange={async (checked) => {
+                      if (checked) {
+                        const granted = await requestPermission();
+                        toast({
+                          title: granted ? t('notificationsEnabled') : t('notificationPermissionDenied'),
+                        });
+                      }
+                    }}
+                  />
+                )}
+              </div>
+              <Separator />
+            </>
+          )}
+          
+          {/* Email Notifications */}
           <div className="flex items-center justify-between">
             <div>
               <Label className="text-sm font-medium">
