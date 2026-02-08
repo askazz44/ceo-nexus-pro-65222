@@ -24,6 +24,7 @@ import NotFound from "./pages/NotFound";
 import Index from "./pages/Index";
 import Budgets from "./pages/Budgets";
 import ComparativeAnalysis from "./pages/ComparativeAnalysis";
+import About from "./pages/About";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,6 +74,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/about" element={<About />} />
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/install" element={<Install />} />

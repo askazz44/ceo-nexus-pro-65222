@@ -120,9 +120,9 @@ const Index = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/about')}
               >
-                {language === 'it' ? 'Vedi Piani' : 'View Plans'}
+                {language === 'it' ? 'Scopri di più' : 'Learn More'}
               </Button>
             </div>
 
