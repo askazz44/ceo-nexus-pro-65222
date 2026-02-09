@@ -36,8 +36,8 @@ const About = () => {
       icon: FolderKanban,
       title: isIt ? "Progetti illimitati" : "Unlimited Projects",
       desc: isIt
-        ? "Crea un progetto per ogni cliente/commessa e traccia entrate, uscite e risparmi separatamente"
-        : "Create a project for each client/job and track income, expenses and savings separately",
+        ? "Crea un progetto per ogni cliente, commessa o linea di business e traccia entrate, uscite e risparmi separatamente"
+        : "Create a project for each client, job or business line and track income, expenses and savings separately",
     },
     {
       icon: BarChart3,
@@ -109,8 +109,8 @@ const About = () => {
       icon: FolderKanban,
       title: isIt ? "Per progetto" : "Per Project",
       desc: isIt
-        ? "L'unica app italiana che traccia profitti per singolo progetto/cliente"
-        : "The only Italian app that tracks profits per individual project/client",
+        ? "L'unica app italiana che traccia profitti per singolo progetto, cliente o business"
+        : "The only Italian app that tracks profits per individual project, client or business",
     },
     {
       icon: DollarSign,
@@ -212,8 +212,8 @@ const About = () => {
               style={{ animationDelay: "0.1s" }}
             >
               {isIt
-                ? "Gestione Finanze per Freelancer & Microimprese"
-                : "Financial Management for Freelancers & Micro-enterprises"}
+                ? "Gestione Finanze per Freelancer, Business & Microimprese"
+                : "Financial Management for Freelancers, Businesses & Micro-enterprises"}
             </p>
 
             <p
@@ -221,8 +221,8 @@ const About = () => {
               style={{ animationDelay: "0.2s" }}
             >
               {isIt
-                ? "L'app che trasforma il caos finanziario dei freelancer in chiarezza. Traccia i profitti per singolo progetto, non per categoria generica — così sai esattamente quanto guadagni da ogni cliente."
-                : "The app that turns freelancer financial chaos into clarity. Track profits per individual project, not by generic category — so you know exactly how much you earn from each client."}
+                ? "L'app che trasforma il caos finanziario di freelancer, microimprese e business in chiarezza. Traccia i profitti per singolo progetto o cliente — così sai esattamente quanto guadagni da ogni attività."
+                : "The app that turns financial chaos for freelancers, micro-enterprises and businesses into clarity. Track profits per project or client — so you know exactly how much you earn from each activity."}
             </p>
           </div>
         </div>
@@ -308,8 +308,8 @@ const About = () => {
               </div>
               <p className="text-lg italic text-foreground/80 leading-relaxed">
                 {isIt
-                  ? "Wave è troppo americano. QuickBooks è troppo caro. Notion richiede setup. GainFlow è l'unica app che fa una cosa sola e la fa bene: dirti quanto guadagni da ogni progetto, in 30 secondi."
-                  : "Wave is too American. QuickBooks is too expensive. Notion requires setup. GainFlow is the only app that does one thing and does it well: telling you how much you earn from each project, in 30 seconds."}
+                  ? "Le app di contabilità sono troppo complesse. I fogli Excel sono troppo limitati. GainFlow è l'unica app che fa una cosa sola e la fa bene: dirti quanto guadagni da ogni progetto, in 30 secondi."
+                  : "Accounting apps are too complex. Spreadsheets are too limited. GainFlow is the only app that does one thing and does it well: telling you how much you earn from each project, in 30 seconds."}
               </p>
             </blockquote>
           </div>
@@ -380,8 +380,8 @@ const About = () => {
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
             {isIt
-              ? "Unisciti ai freelancer che stanno già usando GainFlow per sapere esattamente quanto guadagnano da ogni progetto."
-              : "Join the freelancers already using GainFlow to know exactly how much they earn from each project."}
+              ? "Unisciti ai freelancer e imprenditori che stanno già usando GainFlow per sapere esattamente quanto guadagnano da ogni progetto."
+              : "Join the freelancers and entrepreneurs already using GainFlow to know exactly how much they earn from each project."}
           </p>
           <Button
             size="lg"
