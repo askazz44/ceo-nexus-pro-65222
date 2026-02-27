@@ -423,6 +423,8 @@ export const translations = {
     notificationPermissionDenied: 'Permesso notifiche negato',
     pushNotifications: 'Notifiche Push',
     budgetAlertNotifications: 'Avvisi budget in tempo reale',
+    privacyPolicy: 'Privacy Policy',
+    termsOfService: 'Termini di Servizio',
   },
   en: {
     // Navigation
@@ -844,6 +846,8 @@ export const translations = {
     notificationPermissionDenied: 'Notification permission denied',
     pushNotifications: 'Push Notifications',
     budgetAlertNotifications: 'Real-time budget alerts',
+    privacyPolicy: 'Privacy Policy',
+    termsOfService: 'Terms of Service',
   },
 };
 
