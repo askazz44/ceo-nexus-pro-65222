@@ -25,6 +25,8 @@ import Index from "./pages/Index";
 import Budgets from "./pages/Budgets";
 import ComparativeAnalysis from "./pages/ComparativeAnalysis";
 import About from "./pages/About";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -78,6 +80,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/install" element={<Install />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
             
             <Route element={<ProtectedRoute><AppLayout /></ProtectedRoute>}>
               <Route path="/dashboard" element={

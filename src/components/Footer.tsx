@@ -1,5 +1,6 @@
-import { Mail } from 'lucide-react';
+import { Mail, Shield, FileText } from 'lucide-react';
 import { useTranslation } from '@/lib/i18n';
+import { Link } from 'react-router-dom';
 
 export function Footer() {
   const { t } = useTranslation();
@@ -16,6 +17,20 @@ export function Footer() {
               <Mail className="h-4 w-4" />
               {t('feedback')}
             </a>
+            <Link
+              to="/privacy"
+              className="flex items-center gap-2 hover:text-primary transition-colors"
+            >
+              <Shield className="h-4 w-4" />
+              {t('privacyPolicy')}
+            </Link>
+            <Link
+              to="/terms"
+              className="flex items-center gap-2 hover:text-primary transition-colors"
+            >
+              <FileText className="h-4 w-4" />
+              {t('termsOfService')}
+            </Link>
           </div>
           
           <div className="text-sm text-muted-foreground">
