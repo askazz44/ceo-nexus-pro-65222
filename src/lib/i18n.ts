@@ -275,6 +275,12 @@ export const translations = {
     helpImprove: 'Aiutaci a migliorare',
     sendFeedback: 'Invia Feedback',
     madeWith: 'Realizzato con',
+    donationsTitle: 'Donazioni',
+    donationsDesc: 'Supporta lo sviluppo di GainFlow',
+    donatePayPal: 'Dona con PayPal',
+    donateCrypto: 'Dona in Crypto (BEP20)',
+    cryptoAddress: 'Indirizzo BEP20',
+    addressCopied: 'Indirizzo copiato!',
     
     // Not Found
     notFound: '404',
@@ -698,6 +704,12 @@ export const translations = {
     helpImprove: 'Help us improve',
     sendFeedback: 'Send Feedback',
     madeWith: 'Made with',
+    donationsTitle: 'Donations',
+    donationsDesc: 'Support GainFlow development',
+    donatePayPal: 'Donate with PayPal',
+    donateCrypto: 'Donate in Crypto (BEP20)',
+    cryptoAddress: 'BEP20 Address',
+    addressCopied: 'Address copied!',
     
     // Not Found
     notFound: '404',
