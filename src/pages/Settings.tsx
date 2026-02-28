@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle, BellRing, Heart, Copy, Wallet } from "lucide-react";
+import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle, BellRing, Heart, Copy, Wallet, XCircle, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Language, getLanguage, setLanguage, useTranslation } from "@/lib/i18n";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
@@ -19,12 +19,21 @@ export default function Settings() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [user, setUser] = useState<any>(null);
+  const [currentTier, setCurrentTier] = useState<string>("free");
   const { permission, isSupported, requestPermission, canNotify } = useNotifications();
 
   useEffect(() => {
     // Load user
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) setUser(session.user);
+      if (session) {
+        setUser(session.user);
+        // Check subscription
+        supabase.functions.invoke("check-subscription", {
+          headers: { Authorization: `Bearer ${session.access_token}` },
+        }).then(({ data }) => {
+          if (data?.tier) setCurrentTier(data.tier);
+        }).catch(() => {});
+      }
     });
 
     // Load settings
@@ -35,6 +44,25 @@ export default function Settings() {
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     setTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
   }, []);
+
+  const handleCancelSubscription = async () => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData?.session) return;
+
+      const { data, error } = await supabase.functions.invoke("customer-portal", {
+        headers: { Authorization: `Bearer ${sessionData.session.access_token}` },
+      });
+
+      if (error) throw error;
+      if (data?.url) window.open(data.url, "_blank");
+    } catch (error) {
+      toast({
+        title: t('error'),
+        variant: "destructive",
+      });
+    }
+  };
 
   const toggleLanguage = () => {
     const newLang: Language = language === 'it' ? 'en' : 'it';
@@ -311,6 +339,30 @@ export default function Settings() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Cancel Subscription */}
+      {currentTier !== "free" && currentTier !== "lifetime" && (
+        <Card className="card-hover border-destructive/30">
+          <CardHeader>
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 rounded-lg bg-destructive/10 flex items-center justify-center">
+                <CreditCard className="h-4 w-4 text-destructive" />
+              </div>
+              <div>
+                <CardTitle>{t('cancelSubscription')}</CardTitle>
+                <CardDescription>{t('cancelSubscriptionDesc')}</CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <p className="text-sm text-muted-foreground mb-4">{t('cancelConfirmDesc')}</p>
+            <Button variant="destructive" onClick={handleCancelSubscription} className="w-full">
+              <XCircle className="mr-2 h-4 w-4" />
+              {t('cancelSubscription')}
+            </Button>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Danger Zone */}
       <Card className="card-hover border-destructive/50">
