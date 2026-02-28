@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Separator } from "@/components/ui/separator";
-import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle, BellRing } from "lucide-react";
+import { Mail, Languages, Moon, Sun, User, Bell, AlertTriangle, BellRing, Heart, Copy, Wallet } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Language, getLanguage, setLanguage, useTranslation } from "@/lib/i18n";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
@@ -249,6 +249,53 @@ export default function Settings() {
             <Mail className="mr-2 h-4 w-4" />
             {t('sendFeedback')}
           </Button>
+        </CardContent>
+      </Card>
+
+      {/* Donations */}
+      <Card className="card-hover border-primary/20">
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Heart className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <CardTitle>{t('donationsTitle')}</CardTitle>
+              <CardDescription>{t('donationsDesc')}</CardDescription>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Button 
+            onClick={() => window.open('https://paypal.me/ascaniovecchio', '_blank')} 
+            className="w-full btn-glow"
+          >
+            <Wallet className="mr-2 h-4 w-4" />
+            {t('donatePayPal')}
+          </Button>
+          
+          <Separator />
+          
+          <div className="space-y-2">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <span>🪙</span> {t('cryptoAddress')}
+            </Label>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-muted px-3 py-2 rounded-md break-all font-mono">
+                0x55a3237a2c26f5fc81493ae9e657515cfb9c1872
+              </code>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  navigator.clipboard.writeText('0x55a3237a2c26f5fc81493ae9e657515cfb9c1872');
+                  toast({ title: t('addressCopied') });
+                }}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
