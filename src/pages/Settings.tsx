@@ -266,13 +266,26 @@ export default function Settings() {
           </div>
         </CardHeader>
         <CardContent className="space-y-4">
-          <Button 
-            onClick={() => window.open('https://paypal.me/ascaniovecchio', '_blank')} 
-            className="w-full btn-glow"
-          >
-            <Wallet className="mr-2 h-4 w-4" />
-            {t('donatePayPal')}
-          </Button>
+          <div className="space-y-2">
+            <Label className="text-sm font-medium flex items-center gap-2">
+              <span>🏦</span> IBAN
+            </Label>
+            <div className="flex items-center gap-2">
+              <code className="flex-1 text-xs bg-muted px-3 py-2 rounded-md break-all font-mono">
+                IT78Y3608105138223309223322
+              </code>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => {
+                  navigator.clipboard.writeText('IT78Y3608105138223309223322');
+                  toast({ title: t('addressCopied') });
+                }}
+              >
+                <Copy className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
           
           <Separator />
           
