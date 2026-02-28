@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Check, Crown, Zap } from "lucide-react";
+import { Check, Crown, Zap, XCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
@@ -199,9 +199,15 @@ const Subscription = () => {
               </p>
             )}
             {currentTier !== "lifetime" && currentTier !== "free" && (
-              <Button variant="outline" onClick={handleManageSubscription} className="mt-2">
-                {t('manageSubscription')}
-              </Button>
+              <div className="flex flex-col sm:flex-row items-center gap-2 mt-2">
+                <Button variant="outline" onClick={handleManageSubscription}>
+                  {t('manageSubscription')}
+                </Button>
+                <Button variant="destructive" onClick={handleManageSubscription}>
+                  <XCircle className="mr-2 h-4 w-4" />
+                  {t('cancelSubscription')}
+                </Button>
+              </div>
             )}
           </div>
         )}
