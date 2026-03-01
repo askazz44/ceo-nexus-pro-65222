@@ -3,9 +3,9 @@ export const STRIPE_CONFIG = {
   priceIds: {
     pro_monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || "price_1SDMO8Qq3sG1dhTUwHusboCN",
     pro_yearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY || "price_1SDMOfQq3sG1dhTUzZ4VevXN",
-    business_monthly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_MONTHLY || "price_1SDPTdQq3sG1dhTUcfeVjrui",
+    business_monthly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_MONTHLY || "price_1T68ruQq3sG1dhTUsOIu3Gwq",
     business_yearly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_YEARLY || "price_1SDPTtQq3sG1dhTUpw16XOy7",
-    lifetime: import.meta.env.VITE_STRIPE_PRICE_LIFETIME || "price_1SDPUIQq3sG1dhTUZlnFF8fH",
+    lifetime: import.meta.env.VITE_STRIPE_PRICE_LIFETIME || "price_1T68s8Qq3sG1dhTUKez8UqTA",
   },
   features: {
     it: {
