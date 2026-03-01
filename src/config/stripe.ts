@@ -24,8 +24,8 @@ export const STRIPE_CONFIG = {
   pricing: {
     free: { monthly: "€0", yearly: "€0" },
     pro: { monthly: "€9.99", yearly: "€79" },
-    business: { monthly: "€19.99", yearly: "€149" },
-    lifetime: { monthly: "€249", yearly: "€249" },
+    business: { monthly: "€14.99", yearly: "€149" },
+    lifetime: { monthly: "€199", yearly: "€199" },
   },
   descriptions: {
     it: {
