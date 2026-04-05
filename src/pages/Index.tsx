@@ -12,8 +12,10 @@ import {
   ArrowRight,
   CheckCircle2,
   BarChart3,
-  FolderKanban
+  FolderKanban,
+  Mail
 } from "lucide-react";
+import { Link } from "react-router-dom";
 import { useTranslation } from "@/lib/i18n";
 import { LanguageToggle } from "@/components/LanguageToggle";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -284,6 +286,29 @@ const Index = () => {
       {/* Footer */}
       <footer className="py-8 border-t">
         <div className="container mx-auto px-4 text-center text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-4 mb-4">
+            <Link
+              to="/privacy"
+              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              <Shield className="h-4 w-4" />
+              {language === 'it' ? 'Privacy Policy' : 'Privacy Policy'}
+            </Link>
+            <Link
+              to="/terms"
+              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              <FileText className="h-4 w-4" />
+              {language === 'it' ? 'Termini di Servizio' : 'Terms of Service'}
+            </Link>
+            <a
+              href="mailto:gainflow10@gmail.com"
+              className="flex items-center gap-1.5 hover:text-primary transition-colors"
+            >
+              <Mail className="h-4 w-4" />
+              {language === 'it' ? 'Contattaci' : 'Contact Us'}
+            </a>
+          </div>
           <p className="mb-2">
             {language === 'it' ? 'Realizzato con' : 'Made with'} ❤️ {language === 'it' ? 'da' : 'by'}{' '}
             <a 
