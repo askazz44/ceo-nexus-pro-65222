@@ -86,16 +86,8 @@ export default function Auth() {
       if (signUpError) throw signUpError;
 
       if (signUpData.user) {
-        const { error: profileError } = await supabase
-          .from("profiles")
-          .insert({
-            id: signUpData.user.id,
-            email: signUpData.user.email!,
-            full_name: data.fullName,
-            subscription_tier: "free",
-          });
-
-        if (profileError) throw profileError;
+        // Profile is created automatically by handle_new_user trigger
+        // Only apply referral code if provided
 
         // Apply referral code if provided
         if (referralCode.trim()) {
