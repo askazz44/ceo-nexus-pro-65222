@@ -68,6 +68,7 @@ export default function Settings() {
     const newLang: Language = language === 'it' ? 'en' : 'it';
     setLang(newLang);
     setLanguage(newLang);
+    document.documentElement.lang = newLang;
     toast({
       title: t('languageChanged'),
       description: t('settingsSaved'),

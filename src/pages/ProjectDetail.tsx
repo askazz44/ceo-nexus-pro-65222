@@ -45,6 +45,8 @@ export default function ProjectDetail() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
   const [deleteProjectDialogOpen, setDeleteProjectDialogOpen] = useState(false);
+  const [deletingTransaction, setDeletingTransaction] = useState(false);
+  const [deletingProject, setDeletingProject] = useState(false);
 
   // Reset page when filters change
   const handleFiltersChange = (newFilters: TransactionFiltersState) => {
@@ -116,6 +118,7 @@ export default function ProjectDetail() {
 
   const handleDelete = async () => {
     if (!transactionToDelete) return;
+    setDeletingTransaction(true);
 
     const { error } = await supabase
       .from("transactions")
@@ -136,6 +139,7 @@ export default function ProjectDetail() {
       setPage(0);
       refetch();
     }
+    setDeletingTransaction(false);
     setDeleteDialogOpen(false);
     setTransactionToDelete(null);
   };
@@ -146,6 +150,7 @@ export default function ProjectDetail() {
   };
 
   const handleDeleteProject = async () => {
+    setDeletingProject(true);
     const { error } = await supabase
       .from("projects")
       .delete()
@@ -157,6 +162,7 @@ export default function ProjectDetail() {
         description: error.message,
         variant: "destructive",
       });
+      setDeletingProject(false);
     } else {
       toast({
         title: t('projectDeleted'),
@@ -324,8 +330,11 @@ export default function ProjectDetail() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>{t('delete')}</AlertDialogAction>
+            <AlertDialogCancel disabled={deletingTransaction}>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deletingTransaction}>
+              {deletingTransaction && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('delete')}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -339,8 +348,11 @@ export default function ProjectDetail() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDeleteProject}>{t('delete')}</AlertDialogAction>
+            <AlertDialogCancel disabled={deletingProject}>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteProject} disabled={deletingProject}>
+              {deletingProject && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('delete')}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
