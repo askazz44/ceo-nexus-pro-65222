@@ -30,6 +30,7 @@ export default function Projects() {
   const [open, setOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [projectToDelete, setProjectToDelete] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState(false);
   
   const form = useForm<ProjectFormData>({
     resolver: zodResolver(projectSchema),
@@ -129,6 +130,7 @@ export default function Projects() {
 
   const handleDelete = async () => {
     if (!projectToDelete) return;
+    setDeleting(true);
 
     const { error } = await supabase
       .from("projects")
@@ -149,6 +151,7 @@ export default function Projects() {
       loadProjects();
       checkCanCreate();
     }
+    setDeleting(false);
     setDeleteDialogOpen(false);
     setProjectToDelete(null);
   };
@@ -416,8 +419,11 @@ export default function Projects() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>{t('delete')}</AlertDialogAction>
+            <AlertDialogCancel disabled={deleting}>{t('cancel')}</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={deleting}>
+              {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {t('delete')}
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
