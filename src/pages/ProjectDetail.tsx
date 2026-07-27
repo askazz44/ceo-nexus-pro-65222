@@ -15,6 +15,7 @@ import { MonthlyReportDownload } from "@/components/MonthlyReportDownload";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, DropdownMenuSeparator } from "@/components/ui/dropdown-menu";
 import { ProjectStatsCards } from "@/components/project-detail/ProjectStats";
+import { ProfitabilityCard } from "@/components/project-detail/ProfitabilityCard";
 import { TransactionForm } from "@/components/project-detail/TransactionForm";
 import { TransactionList } from "@/components/project-detail/TransactionList";
 import { ProjectCharts } from "@/components/project-detail/ProjectCharts";
@@ -64,6 +65,7 @@ export default function ProjectDetail() {
           category: data.category || null,
           note: data.note || null,
           transaction_date: data.transaction_date,
+          hours_worked: data.hours_worked ?? null,
         })
         .eq("id", editingTransaction.id);
 
@@ -91,6 +93,7 @@ export default function ProjectDetail() {
         category: data.category || null,
         note: data.note || null,
         transaction_date: data.transaction_date,
+        hours_worked: data.hours_worked ?? null,
       });
 
       if (error) {
@@ -250,6 +253,8 @@ export default function ProjectDetail() {
       </div>
 
       <ProjectStatsCards stats={stats} currency={project.currency} />
+
+      <ProfitabilityCard stats={stats} currency={project.currency} />
 
       <Tabs defaultValue="transactions">
         <TabsList>

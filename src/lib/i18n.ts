@@ -486,6 +486,17 @@ export const translations = {
     resetLinkExpired: 'This password reset link is invalid or has expired.',
     exportCSV: 'Export CSV',
     exportJSON: 'Export JSON',
+    hoursWorked: 'Hours worked (optional)',
+    hoursWorkedPlaceholder: 'e.g. 8',
+    profitability: 'Project Profitability',
+    hourlyRate: 'Real hourly earnings',
+    hoursTotal: 'Total hours',
+    perHour: '/ hour',
+    roiGoodMsg: 'Great margin! This job is a gold mine. Try to find more clients like this one.',
+    roiMidMsg: 'Average margin. Watch out for rising expenses or you\'ll start losing money.',
+    roiLowMsg: 'Danger! Expenses are eating all your profit. You risk working for free.',
+    hourlyRateShockMsg: 'Exploitation Alert! On this project you\'re earning less than an entry-level employee with no responsibility. The client is taking too much of your time relative to what they pay. Time to ask for a raise or end the relationship.',
+    addHoursToSeeRate: 'Add hours worked to your transactions to calculate your real hourly rate.',
     
     // Dashboard
     totalProjects: 'Total Projects',
