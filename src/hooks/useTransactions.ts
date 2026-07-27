@@ -103,13 +103,22 @@ export function useTransactions({ projectId, page = 0, itemsPerPage = 20, filter
     const totalSavings = allTransactions
       .filter(t => t.type === 'savings')
       .reduce((sum, t) => sum + Number(t.amount), 0);
-    
+
+    const totalHours = allTransactions
+      .reduce((sum, t) => sum + Number(t.hours_worked || 0), 0);
+
+    const netProfit = totalIncome - totalExpense - totalSavings;
+    const grossProfit = totalIncome - totalExpense;
+
     return {
       totalIncome,
       totalExpense,
       totalSavings,
-      netProfit: totalIncome - totalExpense - totalSavings,
+      netProfit,
       transactionCount: allTransactions.length,
+      totalHours,
+      roi: totalIncome > 0 ? (grossProfit / totalIncome) * 100 : null,
+      hourlyRate: totalHours > 0 ? grossProfit / totalHours : null,
     };
   }, [allTransactions]);
 

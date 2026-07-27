@@ -29,12 +29,14 @@ export function TransactionForm({ projectId, currency, editingTransaction, onSub
       category: editingTransaction.category || '',
       note: editingTransaction.note || '',
       transaction_date: editingTransaction.transaction_date,
+      hours_worked: editingTransaction.hours_worked ?? undefined,
     } : {
       type: 'income',
       amount: 0,
       category: '',
       note: '',
       transaction_date: new Date().toISOString().split('T')[0],
+      hours_worked: undefined,
     },
   });
 
@@ -127,6 +129,27 @@ export function TransactionForm({ projectId, currency, editingTransaction, onSub
               <FormLabel>{t('date')}</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="hours_worked"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('hoursWorked')}</FormLabel>
+              <FormControl>
+                <Input
+                  type="number"
+                  step="0.25"
+                  min="0"
+                  placeholder={t('hoursWorkedPlaceholder')}
+                  value={field.value ?? ''}
+                  onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
