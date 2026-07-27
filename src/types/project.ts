@@ -23,6 +23,7 @@ export interface Transaction {
   category: string | null;
   note: string | null;
   transaction_date: string;
+  hours_worked: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -33,4 +34,7 @@ export interface ProjectStats {
   totalSavings: number;
   netProfit: number;
   transactionCount: number;
+  totalHours: number;
+  roi: number | null;
+  hourlyRate: number | null;
 }
