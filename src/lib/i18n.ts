@@ -42,6 +42,17 @@ export const translations = {
     resetLinkExpired: 'Questo link di reset password non è valido o è scaduto.',
     exportCSV: 'Esporta CSV',
     exportJSON: 'Esporta JSON',
+    hoursWorked: 'Ore dedicate (facoltativo)',
+    hoursWorkedPlaceholder: 'Es. 8',
+    profitability: 'Redditività del Progetto',
+    hourlyRate: 'Guadagno orario reale',
+    hoursTotal: 'Ore totali',
+    perHour: '/ ora',
+    roiGoodMsg: 'Ottimo margine! Questo lavoro è una miniera d\'oro. Cerca di trovare altri clienti come questo.',
+    roiMidMsg: 'Margine nella media. Attento a non far salire le spese o inizierai a rimetterci.',
+    roiLowMsg: 'Pericolo! Le spese stanno mangiando tutto il tuo profitto. Stai rischiando di lavorare gratis.',
+    hourlyRateShockMsg: 'Allerta Sfruttamento! Su questo progetto stai guadagnando meno di un lavoro dipendente base senza responsabilità. Il cliente ti sta assorbendo troppo tempo rispetto a quanto ti paga. È il momento di chiedere un aumento o chiudere il rapporto.',
+    addHoursToSeeRate: 'Aggiungi le ore dedicate alle tue transazioni per calcolare il guadagno orario reale.',
     
     // Dashboard
     totalProjects: 'Progetti Totali',
