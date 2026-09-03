@@ -1,11 +1,11 @@
 // Centralize all Stripe IDs and language-aware copy
 export const STRIPE_CONFIG = {
   priceIds: {
-    pro_monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || "price_1SDMO8Qq3sG1dhTUwHusboCN",
-    pro_yearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY || "price_1SDMOfQq3sG1dhTUzZ4VevXN",
-    business_monthly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_MONTHLY || "price_1T68ruQq3sG1dhTUsOIu3Gwq",
-    business_yearly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_YEARLY || "price_1SDPTtQq3sG1dhTUpw16XOy7",
-    lifetime: import.meta.env.VITE_STRIPE_PRICE_LIFETIME || "price_1T68s8Qq3sG1dhTUKez8UqTA",
+    pro_monthly: import.meta.env.VITE_STRIPE_PRICE_PRO_MONTHLY || "price_1UBbYVJ0DTKAEOs5SXGjUsKV",
+    pro_yearly: import.meta.env.VITE_STRIPE_PRICE_PRO_YEARLY || "price_1UBbZQJ0DTKAEOs51PjDog77",
+    business_monthly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_MONTHLY || "price_1UBba9J0DTKAEOs518l1ITQ6",
+    business_yearly: import.meta.env.VITE_STRIPE_PRICE_BUSINESS_YEARLY || "price_1UBbc5J0DTKAEOs5o918MIj6",
+    lifetime: import.meta.env.VITE_STRIPE_PRICE_LIFETIME || "price_1UBbczJ0DTKAEOs5pyklAXVb",
   },
   features: {
     it: {
