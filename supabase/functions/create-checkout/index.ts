@@ -58,11 +58,11 @@ serve(async (req) => {
 
     // Determine tier from price ID
     const PRICE_TO_TIER: Record<string, string> = {
-      "price_1SDMO8Qq3sG1dhTUwHusboCN": "pro",
-      "price_1SDMOfQq3sG1dhTUzZ4VevXN": "pro",
-      "price_1SDPTdQq3sG1dhTUcfeVjrui": "business",
-      "price_1SDPTtQq3sG1dhTUpw16XOy7": "business",
-      "price_1SDPUIQq3sG1dhTUZlnFF8fH": "lifetime",
+      "price_1UBbYVJ0DTKAEOs5SXGjUsKV": "pro",
+      "price_1UBbZQJ0DTKAEOs51PjDog77": "pro",
+      "price_1UBba9J0DTKAEOs518l1ITQ6": "business",
+      "price_1UBbc5J0DTKAEOs5o918MIj6": "business",
+      "price_1UBbczJ0DTKAEOs5pyklAXVb": "lifetime",
     };
     const tier = PRICE_TO_TIER[priceId] || "unknown";
     logStep("Determined tier", { tier });
